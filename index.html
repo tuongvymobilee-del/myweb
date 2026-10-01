@@ -1914,9 +1914,9 @@ function restoreFullDatabaseJSON(event) {
 
     let subtotalRev = 0;
     currentCart.forEach(i => subtotalRev += (i.price * i.qty));
-    const discount = parseFloat(document.getElementById('inputDiscountAmount').value) || 0;
+    const discount = parseFloat(document.getElementById('inputDiscountAmount').value.replace(/\D/g, '')) || 0;
     const finalOrderRev = Math.max(0, subtotalRev - discount);
-    const paidNow = parseFloat(document.getElementById('inputPaidNow').value) || 0;
+    const paidNow = parseFloat(document.getElementById('inputPaidNow').value.replace(/\D/g, '')) || 0;
     const remainDebt = Math.max(0, finalOrderRev - paidNow);
 
     const months = parseInt(document.getElementById('inputInstallmentMonths').value) || 1;
@@ -1933,13 +1933,17 @@ function restoreFullDatabaseJSON(event) {
         suggestedAmount = Math.max(0, remainDebt - sumPrev);
       }
 
-      // Đã tối ưu lại tỷ lệ lưới và class money-input để hiển thị rõ số trên điện thoại
+      // Thiết kế bố cục xếp dọc hoàn toàn tối ưu cho điện thoại: số tiền và ngày rộng rãi, không bị che
       const rowDiv = document.createElement('div');
-      rowDiv.style.cssText = "display:grid; grid-template-columns: 55px 1.3fr 1fr; gap:6px; align-items:center; background:#fff; padding:8px; border-radius:8px; border:1px solid var(--border);";
+      rowDiv.style.cssText = "background:#fff; padding:10px; border-radius:10px; border:1px solid var(--border); margin-bottom:6px;";
       rowDiv.innerHTML = `
-        <span style="font-weight:800; font-size:0.8rem; color:var(--primary);">Kỳ ${i}:</span>
-        <input type="text" class="inst-amount money-input" value="${suggestedAmount.toLocaleString('vi-VN')}" placeholder="Số tiền" oninput="formatMoneyInput(this)" style="padding:7px 6px; font-size:0.85rem; font-weight:700; color:var(--danger); text-align:right;">
-        <input type="date" class="inst-date" value="${dateStr}" style="padding:7px 4px; font-size:0.75rem;">
+        <div style="font-weight:800; font-size:0.82rem; color:var(--primary); margin-bottom:6px; display:flex; justify-content:space-between;">
+          <span>Kỳ thanh toán thứ ${i}:</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:8px;">
+          <input type="text" class="inst-amount money-input" value="${suggestedAmount.toLocaleString('vi-VN')}" placeholder="Số tiền (đ)" oninput="formatMoneyInput(this)" style="padding:9px 8px; font-size:0.95rem; font-weight:800; color:var(--danger); text-align:right;">
+          <input type="date" class="inst-date" value="${dateStr}" style="padding:9px 6px; font-size:0.85rem; font-weight:700;">
+        </div>
       `;
       container.appendChild(rowDiv);
     }
@@ -3555,7 +3559,7 @@ function applyStoreSettings() {
     const note = document.getElementById('inputNote').value.trim();
     const orderDate = document.getElementById('inputDate').value || getTodayVN();
     const staff = currentUser ? currentUser.name : "Tường Vy";
-    const discountAmount = parseFloat(document.getElementById('inputDiscountAmount').value) || 0;
+    const discountAmount = parseFloat(document.getElementById('inputDiscountAmount').value.replace(/\D/g, '')) || 0;
     const tempOrderId = 'TV' + Math.floor(1000 + Math.random() * 9000);
 
     const paymentMode = document.getElementById('inputPaymentMode').value;
@@ -3571,7 +3575,8 @@ function applyStoreSettings() {
       for (let k = 0; k < amountInputs.length; k++) {
         installmentSchedules.push({
           period: k + 1,
-          amount: parseFloat(amountInputs[k].value) || 0,
+          // Thêm .replace(/\D/g, '') để lấy chính xác số tiền đầy đủ không bị lỗi dấu chấm
+          amount: parseFloat(amountInputs[k].value.replace(/\D/g, '')) || 0,
           dueDate: dateInputs[k].value || getTodayVN(),
           status: 'Chưa trả'
         });
@@ -3591,10 +3596,9 @@ function applyStoreSettings() {
       paidAmountNow = finalOrderRev;
       debtAmount = 0;
     } else {
-      // Lấy chính xác số tiền khách thực trả đưa trước
-      paidAmountNow = parseFloat(document.getElementById('inputPaidNow').value) || 0;
+      // Dùng .replace(/\D/g, '') để loại bỏ dấu chấm định dạng trước khi tính toán
+      paidAmountNow = parseFloat(document.getElementById('inputPaidNow').value.replace(/\D/g, '')) || 0;
       
-      // Nếu có chia lịch trả góp từng kỳ, tính tổng tiền các kỳ hoặc lấy tổng đơn trừ tiền trả trước
       let totalScheduleAmt = 0;
       if (installmentSchedules.length > 0) {
         installmentSchedules.forEach(s => totalScheduleAmt += s.amount);
