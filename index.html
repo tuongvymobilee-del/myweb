@@ -305,22 +305,29 @@
     .format-k80 .bill-footer { font-size: 9.5px; text-align: center; margin-top: 6px; line-height: 1.3; }
     .format-k80 .bill-signatures { display: none !important; }
 
-    /* Khổ A5 & A4 */
-    .bill-box.format-a5, .bill-box.format-a4 { line-height: 1.5; padding: 14px; }
-    .bill-box.format-a5 { max-width: 140mm; font-size: 12.5px; }
-    .bill-box.format-a4 { max-width: 190mm; font-size: 14px; }
-    .format-a5 .bill-header, .format-a4 .bill-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 12px; text-align: left; }
-    .format-a5 .bill-header h3, .format-a4 .bill-header h3 { font-size: 18px; font-weight: 800; color: #1e3a8a; }
-    .format-a5 .bill-title, .format-a4 .bill-title { text-align: center; font-weight: 800; font-size: 17px; margin: 12px 0; letter-spacing: 1px; }
-    .format-a5 .bill-info, .format-a4 .bill-info { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; font-size: 12.5px; margin-bottom: 12px; }
-    .format-a4 .bill-info { font-size: 13.5px; }
-    .format-a5 .bill-table, .format-a4 .bill-table { width: 100% !important; border-collapse: collapse; margin: 10px 0; border: 1.5px solid #000; }
-    .format-a5 .bill-table th, .format-a4 .bill-table th { background: #f1f5f9; border: 1.5px solid #000; padding: 7px 6px; font-weight: 700; text-align: center; }
-    .format-a5 .bill-table td, .format-a4 .bill-table td { border: 1.5px solid #000; padding: 7px 6px; }
-    .format-a5 .bill-summary-container, .format-a4 .bill-summary-container { display: flex; flex-direction: column; align-items: flex-end; margin: 10px 0; }
-    .format-a5 .bill-summary-row, .format-a4 .bill-summary-row { display: flex; gap: 20px; font-size: 14px; }
-    .format-a5 .bill-summary-row.total-bold, .format-a4 .bill-summary-row.total-bold { font-size: 15.5px; font-weight: 800; border-bottom: 2px double #000; padding-bottom: 4px; margin-top: 4px; }
-    .format-a5 .bill-qr-img, .format-a4 .bill-qr-img { width: 130px; height: 130px; }
+    /* Khổ A5 & A4 Tối Ưu Cân Đối */
+    .bill-box.format-a5, .bill-box.format-a4 { line-height: 1.6; padding: 24px; box-sizing: border-box; }
+    .bill-box.format-a5 { max-width: 148mm; min-height: 210mm; font-size: 13px; }
+    .bill-box.format-a4 { max-width: 210mm; min-height: 297mm; font-size: 14.5px; }
+
+    .format-a5 .bill-header, .format-a4 .bill-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 16px; text-align: left; }
+    .format-a5 .bill-header h3, .format-a4 .bill-header h3 { font-size: 20px; font-weight: 800; color: #1e3a8a; margin-bottom: 4px; }
+    
+    .format-a5 .bill-title, .format-a4 .bill-title { text-align: center; font-weight: 800; font-size: 18px; margin: 16px 0; letter-spacing: 0.5px; text-transform: uppercase; }
+    
+    .format-a5 .bill-info, .format-a4 .bill-info { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; font-size: 13px; margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
+    .format-a4 .bill-info { font-size: 14px; }
+    .format-a5 .bill-info div, .format-a4 .bill-info div { display: flex; justify-content: space-between; }
+
+    .format-a5 .bill-table, .format-a4 .bill-table { width: 100% !important; border-collapse: collapse; margin: 14px 0; border: 1.5px solid #000; }
+    .format-a5 .bill-table th, .format-a4 .bill-table th { background: #f1f5f9; border: 1.5px solid #000; padding: 9px 8px; font-weight: 700; text-align: center; font-size: 13px; }
+    .format-a5 .bill-table td, .format-a4 .bill-table td { border: 1.5px solid #000; padding: 9px 8px; vertical-align: middle; }
+
+    .format-a5 .bill-summary-container, .format-a4 .bill-summary-container { display: flex; flex-direction: column; align-items: flex-end; margin: 14px 0; font-size: 14px; gap: 4px; }
+    .format-a5 .bill-summary-row, .format-a4 .bill-summary-row { display: flex; justify-content: space-between; width: 300px; gap: 20px; }
+    .format-a5 .bill-summary-row.total-bold, .format-a4 .bill-summary-row.total-bold { font-size: 16px; font-weight: 800; border-top: 2px solid #000; border-bottom: 2px double #000; padding: 6px 0; margin-top: 4px; width: 320px; }
+    
+    .format-a5 .bill-qr-img, .format-a4 .bill-qr-img { width: 120px; height: 120px; }
     
     .bill-signatures { display: flex; justify-content: space-between; margin-top: 25px; padding: 0 20px; text-align: center; }
     .sign-box { width: 45%; }
@@ -601,11 +608,11 @@
               </div>
               <div class="form-group">
                 <label>Đơn giá bán (/ cái)</label>
-                <input type="number" id="inputPrice" placeholder="50000" min="0">
+                <input type="text" id="inputPrice" placeholder="50.000" oninput="formatMoneyInput(this)">
               </div>
               <div class="form-group" id="groupCostField">
                 <label>Đơn giá vốn (/ cái)</label>
-                <input type="number" id="inputCost" placeholder="10000" min="0">
+                <input type="text" id="inputCost" placeholder="10.000" oninput="formatMoneyInput(this)">
               </div>
               <div class="form-group">
                 <label>Bảo hành</label>
@@ -686,7 +693,7 @@
 
               <div class="form-group" id="groupPaidAmount" style="display:none;">
                 <label>Tiền khách đưa trước (Thực thu):</label>
-                <input type="number" id="inputPaidNow" value="0" min="0" placeholder="0" style="font-weight:800; color:var(--primary);" oninput="calculateDebtPreview()">
+                <input type="text" id="inputPaidNow" value="0" min="0" placeholder="0" style="font-weight:800; color:var(--primary);" oninput="calculateDebtPreview()">
               </div>
               
               <div class="form-group" id="groupDueDate" style="display:none;">
@@ -925,12 +932,12 @@
 
               <div class="form-group" id="groupStockCostField">
                 <label>Giá vốn nhập (/ cái)</label>
-                <input type="number" id="stockCost" placeholder="10000" min="0" required>
+                <input type="text" id="stockCost" placeholder="10.000" required oninput="formatMoneyInput(this)">
               </div>
               <div class="form-group">
                 <label>Giá bán dự kiến (/ cái)</label>
-                <input type="number" id="stockPrice" placeholder="50000" min="0" required>
-              </div>
+               <input type="text" id="stockPrice" placeholder="50.000" required oninput="formatMoneyInput(this)">
+               </div>
 
               <div class="form-group">
                 <label>Bảo hành mặc định</label>
@@ -1427,6 +1434,22 @@
 </div>
 
 <script>
+// 🛠️ Hàm tự động thêm dấu chấm định dạng tiền tệ khi gõ (VD: 2800000 -> 2.800.000)
+  function formatMoneyInput(input) {
+    let rawVal = input.value.replace(/\D/g, '');
+    if (rawVal === '') {
+      input.value = '';
+    } else {
+      input.value = parseInt(rawVal, 10).toLocaleString('vi-VN');
+    }
+  }
+
+  // 🛠️ Hàm lấy giá trị số nguyên sạch từ ô đã định dạng dấu chấm
+  function getCleanNumber(elementId) {
+    const el = document.getElementById(elementId);
+    if (!el || !el.value) return 0;
+    return parseInt(el.value.replace(/\D/g, ''), 10) || 0;
+  }
 // Hàm xuất sổ chi tiết doanh thu theo Mẫu số S1a-HKD (Thông tư 88/2021/TT-BTC)
 function exportRevenueS1aHKD() {
   if (!currentUser || currentUser.role !== 'admin') {
@@ -1910,12 +1933,13 @@ function restoreFullDatabaseJSON(event) {
         suggestedAmount = Math.max(0, remainDebt - sumPrev);
       }
 
+      // Đã tối ưu lại tỷ lệ lưới và class money-input để hiển thị rõ số trên điện thoại
       const rowDiv = document.createElement('div');
-      rowDiv.style.cssText = "display:grid; grid-template-columns: 75px 1fr 1fr; gap:6px; align-items:center; background:#fff; padding:6px 8px; border-radius:8px; border:1px solid var(--border);";
+      rowDiv.style.cssText = "display:grid; grid-template-columns: 55px 1.3fr 1fr; gap:6px; align-items:center; background:#fff; padding:8px; border-radius:8px; border:1px solid var(--border);";
       rowDiv.innerHTML = `
         <span style="font-weight:800; font-size:0.8rem; color:var(--primary);">Kỳ ${i}:</span>
-        <input type="number" class="inst-amount" value="${suggestedAmount}" placeholder="Số tiền (đ)" min="0" style="padding:6px; font-size:0.8rem; font-weight:700; color:var(--danger);">
-        <input type="date" class="inst-date" value="${dateStr}" style="padding:6px; font-size:0.8rem;">
+        <input type="text" class="inst-amount money-input" value="${suggestedAmount.toLocaleString('vi-VN')}" placeholder="Số tiền" oninput="formatMoneyInput(this)" style="padding:7px 6px; font-size:0.85rem; font-weight:700; color:var(--danger); text-align:right;">
+        <input type="date" class="inst-date" value="${dateStr}" style="padding:7px 4px; font-size:0.75rem;">
       `;
       container.appendChild(rowDiv);
     }
@@ -3567,9 +3591,19 @@ function applyStoreSettings() {
       paidAmountNow = finalOrderRev;
       debtAmount = 0;
     } else {
+      // Lấy chính xác số tiền khách thực trả đưa trước
       paidAmountNow = parseFloat(document.getElementById('inputPaidNow').value) || 0;
-      debtAmount = Math.max(0, finalOrderRev - paidAmountNow);
-      dueDate = document.getElementById('inputDueDate').value;
+      
+      // Nếu có chia lịch trả góp từng kỳ, tính tổng tiền các kỳ hoặc lấy tổng đơn trừ tiền trả trước
+      let totalScheduleAmt = 0;
+      if (installmentSchedules.length > 0) {
+        installmentSchedules.forEach(s => totalScheduleAmt += s.amount);
+        debtAmount = totalScheduleAmt;
+      } else {
+        debtAmount = Math.max(0, finalOrderRev - paidAmountNow);
+      }
+      
+      dueDate = document.getElementById('inputDueDate') ? document.getElementById('inputDueDate').value : '';
       if (!custPhone) return alert("Khách nợ hoặc trả góp bắt buộc phải có Số Điện Thoại để theo dõi công nợ!");
     }
 
@@ -3614,8 +3648,8 @@ function applyStoreSettings() {
       cost: orderTotalCost,
       paymentMode: paymentMode,
       installmentSchedules: installmentSchedules,
-      paidAmount: paidAmountNow,
-      debtAmount: debtAmount,
+      paidAmount: paidAmountNow, // Gán đúng số tiền thực thu ban đầu
+      debtAmount: debtAmount,     // Gán đúng số tiền còn nợ
       dueDate: dueDate
     };
 
@@ -4292,6 +4326,22 @@ function applyStoreSettings() {
     });
   });
 
+  // 🛠️ Hàm chuẩn hóa tính tiền đã trả cho cả đơn mới lẫn đơn cũ
+  function getOrderPaid(o) {
+    if (o.paidAmount !== undefined) return o.paidAmount;
+    if (o.paymentMode === 'full') return o.price || 0;
+    if (!o.paymentMode) return o.price || 0; // Đơn cũ trước đây mặc định đã thanh toán đủ
+    return 0;
+  }
+
+  // 🛠️ Hàm chuẩn hóa tính tiền nợ cho cả đơn mới lẫn đơn cũ
+  function getOrderDebt(o) {
+    if (o.debtAmount !== undefined) return o.debtAmount;
+    const price = o.price || 0;
+    const paid = getOrderPaid(o);
+    return Math.max(0, price - paid);
+  }
+
   function getFilteredOrders() {
     const query = (document.getElementById('orderSearchInput') ? document.getElementById('orderSearchInput').value : '').trim().toLowerCase();
 
@@ -4302,7 +4352,9 @@ function applyStoreSettings() {
         const nameMatch = (o.customerName && o.customerName.toLowerCase().includes(query));
         const phoneMatch = (o.customerPhone && o.customerPhone.toLowerCase().includes(query));
         const noteMatch = (o.note && o.note.toLowerCase().includes(query));
-        const debtMatch = query.includes('nợ') && (o.debtAmount > 0);
+        
+        const currentDebt = getOrderDebt(o);
+        const debtMatch = query.includes('nợ') && currentDebt > 0;
         
         let itemMatch = false;
         if (o.items && Array.isArray(o.items)) {
@@ -4322,10 +4374,12 @@ function applyStoreSettings() {
     const currentMonthVN = todayVN.substring(0, 7);
 
     return orders.filter(o => {
+      const currentDebt = getOrderDebt(o);
+
       if (currentFilter === 'today') return o.date === todayVN;
       if (currentFilter === 'yesterday') return o.date === yestVN;
       if (currentFilter === 'month') return o.date && o.date.startsWith(currentMonthVN);
-      if (currentFilter === 'debt') return (o.debtAmount > 0);
+      if (currentFilter === 'debt') return currentDebt > 0;
       return true;
     });
   }
@@ -4372,8 +4426,8 @@ function applyStoreSettings() {
 
       const finalRev = o.price || orderRev;
       const cleanP = (o.customerPhone || '').replace(/\s/g, '');
-      const paidAmt = (o.paidAmount !== undefined) ? o.paidAmount : finalRev;
-      const debtAmt = (o.debtAmount !== undefined) ? o.debtAmount : 0;
+      const paidAmt = getOrderPaid(o);
+      const debtAmt = getOrderDebt(o);
 
       let debtCellDesktop = debtAmt > 0
         ? `<td><span class="badge badge-debt">Nợ: ${debtAmt.toLocaleString('vi-VN')} đ</span>${o.dueDate ? `<br><small style="color:#b91c1c;">Hạn: ${formatDateVN(o.dueDate)}</small>` : ''}</td>`
