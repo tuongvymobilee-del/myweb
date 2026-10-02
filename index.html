@@ -532,7 +532,16 @@
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr; gap:14px;">
+<!-- 🔔 ĐƯA KHUNG NHẮC NỢ VÀO ĐÂY (NẰM TRONG TRANG CHỦ) -->
+                <div class="form-card" style="margin-top:14px; border-left: 4px solid var(--warning);">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <h2 style="margin-bottom:0; color:#b45309; font-size:0.92rem;">🔔 Khách Hàng Đến Hạn Trả Nợ Hôm Nay</h2>
+                    <span class="badge" id="dueTodayCountBadge" style="background:#fef3c7; color:#b45309; font-weight:800;">0 đơn cần thu</span>
+                  </div>
+                  <div id="dashDueTodayContainer"></div>
+                </div>
+        
+<div style="display:grid; grid-template-columns:1fr; gap:14px;">
           <div class="form-card" style="margin-bottom:0;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
               <h2 style="margin-bottom:0;">📋 Các đơn hàng vừa phát sinh</h2>
@@ -542,22 +551,15 @@
           </div>
 
           <div class="form-card" style="margin-bottom:0;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-              <h2 style="margin-bottom:0; color:#b91c1c;">⚠️ Hàng sắp hết & Âm kho (≤ 2 cái)</h2>
-              <button onclick="navigateTo('inventory')" style="font-size:0.76rem; color:var(--primary); background:none; border:none; font-weight:700; cursor:pointer;">Vào kho ➔</button>
-            </div>
-            <div id="dashLowStockContainer"></div>
-          </div>
-        </div>
-      </section>
-<div class="form-card" style="margin-top:14px; border-left: 4px solid var(--warning);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-              <h2 style="margin-bottom:0; color:#b45309;">🔔 Khách Hàng Đến Hạn Trả Nợ</h2>
-              <span class="badge" id="dueTodayCountBadge" style="background:#fef3c7; color:#b45309; font-weight:800;">0 đơn cần thu</span>
-            </div>
-            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">Tổng hợp các đơn hàng nợ đã đến hạn hoặc quá hạn thanh toán cần liên hệ thu hồi.</p>
-            <div id="dashDueTodayContainer"></div>
-          </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                      <h2 style="margin-bottom:0; color:#b91c1c;">⚠️ Hàng sắp hết & Âm kho (≤ 2 cái)</h2>
+                      <button onclick="navigateTo('inventory')" style="font-size:0.76rem; color:var(--primary); background:none; border:none; font-weight:700; cursor:pointer;">Vào kho ➔</button>
+                    </div>
+                    <div id="dashLowStockContainer"></div>
+                  </div>
+                </div>
+
+              </section> <!-- KẾT THÚC VIEW HOME Ở ĐÂY -->
 
       <!-- TRANG 2: BÁN HÀNG (POS) - TÍCH HỢP TRẢ GÓP & GHI NỢ -->
       <section id="viewSales" class="app-view">
