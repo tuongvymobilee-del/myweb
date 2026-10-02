@@ -3554,9 +3554,13 @@ function applyStoreSettings() {
     const device = document.getElementById('inputDevice').value.trim();
     const service = document.getElementById('inputService').value.trim() || 'Phụ kiện';
     const qty = parseInt(document.getElementById('inputQty').value) || 1;
-    const price = parseFloat(document.getElementById('inputPrice').value) || 0;
+    
+    // Đã làm sạch dấu chấm định dạng bằng .replace(/\D/g, '') để không bị lỗi 50 đ
+    const price = parseFloat(document.getElementById('inputPrice').value.replace(/\D/g, '')) || 0;
     const warranty = document.getElementById('inputWarranty').value;
-    let cost = parseFloat(document.getElementById('inputCost').value) || 0;
+    let cost = parseFloat(document.getElementById('inputCost').value.replace(/\D/g, '')) || 0;
+    
+    // Đã sửa dấu ngoặc đúng chuẩn ở đây:
     const stockNote = document.getElementById('inputItemStockNote') ? document.getElementById('inputItemStockNote').value.trim() : '';
 
     if (!device) {
