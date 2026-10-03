@@ -3434,25 +3434,34 @@ function applyStoreSettings() {
       });
     }
 
-    // 💡 Tối ưu hóa chuyên sâu cho iPhone: Ép lấy nét liên tục và tăng tốc độ khung hình
+    // 💡 Đã tối ưu hóa lại thông số cho camera iPhone mượt và nhạy hơn
     const config = {
       fps: 25,
+      // Thu nhỏ khung quét lại (khoảng 75% rộng, 160px cao) để tạo thành 1 "khe nhắm" dẹt ở giữa màn hình. 
+      // Nhân viên chỉ cần căn mã vạch sọc nằm lọt vào khe này, AI sẽ lấy nét cực nhanh.
       qrbox: (viewWidth, viewHeight) => {
-        const width = Math.floor(viewWidth * 0.90);
-        const height = Math.floor(width * 0.50);
+        const width = Math.floor(viewWidth * 0.75);
+        const height = 160; 
         return { width: width, height: height };
       },
       videoConstraints: {
-        facingMode: "environment",
-        width: { min: 1280, ideal: 1920, max: 3840 },
-        height: { min: 720, ideal: 1080, max: 2160 },
-        // Lệnh bắt buộc để camera iPhone tự động lấy nét (focus) sắc nét mã vạch
-        advanced: [{ focusMode: "continuous" }]
+        // Sử dụng exact để ép iPhone dùng camera sau chuẩn, tránh dùng nhầm camera góc siêu rộng (Ultra-wide không lấy nét gần được)
+        facingMode: { exact: "environment" },
+        // Độ phân giải vàng cho mã vạch: HD 720p (Rõ nét vạch sọc, xử lý real-time cực nhẹ và mượt)
+        width: { min: 640, ideal: 1280, max: 1920 },
+        height: { min: 480, ideal: 720, max: 1080 },
+        // Ép các thông số phần cứng liên tục hoạt động để chống nhòe khi rung tay
+        advanced: [
+          { focusMode: "continuous" },
+          { whiteBalanceMode: "continuous" },
+          { exposureMode: "continuous" }
+        ]
       }
     };
 
+    // SỬA QUAN TRỌNG: Truyền trực tiếp "config.videoConstraints" vào tham số thứ nhất để Safari không nuốt mất cấu hình nâng cao
     html5QrCodeScanner.start(
-      { facingMode: "environment" },
+      config.videoConstraints,
       config,
       (decodedText) => {
         if (!isScanningActive) return;
@@ -3461,10 +3470,15 @@ function applyStoreSettings() {
       },
       () => {}
     ).catch(err => {
-      // Cấu hình dự phòng nếu thiết bị không nhận diện được thông số nâng cao
+      console.warn("Lỗi cấu hình nâng cao, chuyển sang chế độ dự phòng:", err);
+      // Cấu hình dự phòng tiêu chuẩn nếu iPhone quá cũ không nhận diện được exact environment
       html5QrCodeScanner.start(
         { facingMode: "environment" },
-        { fps: 20, qrbox: { width: 300, height: 150 } },
+        { 
+          fps: 20, 
+          qrbox: { width: 280, height: 150 },
+          videoConstraints: { facingMode: "environment" }
+        },
         (decodedText) => {
           if (!isScanningActive) return;
           isScanningActive = false;
@@ -3476,7 +3490,7 @@ function applyStoreSettings() {
         closeBarcodeScanner();
       });
     });
-  }
+}
 
   function toggleCameraTorch() {
     if (html5QrCodeScanner && html5QrCodeScanner.isScanning) {
