@@ -4659,7 +4659,12 @@ function applyStoreSettings() {
     if (currentUser.role !== 'admin') return alert('Chỉ Quản lý mới có quyền xuất file dữ liệu tài chính!');
 
     const ordersSheetData = [
-      ["Mã đơn", "Ngày bán", "Giờ tạo", "Nhân viên", "Khách hàng", "Số điện thoại", "Tên mặt hàng", "Nhóm dịch vụ", "Số lượng", "Đơn giá thu", "Đơn giá vốn", "Thành tiền thu", "Tiền vốn", "Lợi nhuận", "Đã thanh toán", "Còn nợ", "Hạn trả nợ", "Bảo hành", "Ghi chú đơn"]
+      [
+        "Mã đơn", "Ngày bán", "Giờ tạo", "Nhân viên", "Khách hàng", "Số điện thoại", 
+        "Tên mặt hàng", "Nhóm dịch vụ", "Số lượng", "Đơn giá thu", "Đơn giá vốn", 
+        "Thành tiền thu", "Tiền vốn", "Lợi nhuận", "Hình thức thanh toán", 
+        "Đã thanh toán", "Còn nợ", "Hạn trả nợ", "Chi tiết các kỳ trả góp", "Bảo hành", "Ghi chú đơn"
+      ]
     ];
 
     orders.forEach(o => {
@@ -4669,9 +4674,20 @@ function applyStoreSettings() {
       const oCust = o.customerName || 'Khách lẻ';
       const oPhone = o.customerPhone ? `'${o.customerPhone}` : '';
       const oNote = o.note || '';
-      const paid = o.paidAmount !== undefined ? o.paidAmount : o.price;
-      const debt = o.debtAmount !== undefined ? o.debtAmount : 0;
+      
+      const paid = (o.paidAmount !== undefined) ? o.paidAmount : (o.price || 0);
+      const debt = (o.debtAmount !== undefined) ? o.debtAmount : 0;
       const due = o.dueDate ? formatDateVN(o.dueDate) : '';
+      
+      let payModeText = "Trả đủ 100%";
+      if (o.paymentMode === 'debt') payModeText = "Trả góp cửa hàng";
+      else if (o.paymentMode === 'finance') payModeText = "Trả góp Tài chính";
+
+      // Tổng hợp thông tin lịch trả góp từng kỳ nếu có
+      let scheduleStr = "";
+      if (o.installmentSchedules && Array.isArray(o.installmentSchedules) && o.installmentSchedules.length > 0) {
+        scheduleStr = o.installmentSchedules.map(s => `Kỳ ${s.period}: ${s.amount.toLocaleString('vi-VN')}đ (Hạn: ${formatDateVN(s.dueDate)}) [${s.status}]`).join(' | ');
+      }
 
       if (o.items && Array.isArray(o.items) && o.items.length > 0) {
         o.items.forEach(it => {
@@ -4682,7 +4698,7 @@ function applyStoreSettings() {
           const totalC = c * q;
           ordersSheetData.push([
             o.id, oDate, oTime, oStaff, oCust, oPhone, it.device, it.service || 'Phụ kiện',
-            q, p, c, rev, totalC, rev - totalC, paid, debt, due, it.warranty || 'Không BH', oNote
+            q, p, c, rev, totalC, rev - totalC, payModeText, paid, debt, due, scheduleStr, it.warranty || 'Không BH', oNote
           ]);
         });
       } else {
@@ -4693,7 +4709,7 @@ function applyStoreSettings() {
         const totalC = c * q;
         ordersSheetData.push([
           o.id, oDate, oTime, oStaff, oCust, oPhone, o.device || '', o.service || '',
-          q, p, c, rev, totalC, rev - totalC, paid, debt, due, o.warranty || 'Không BH', oNote
+          q, p, c, rev, totalC, rev - totalC, payModeText, paid, debt, due, scheduleStr, o.warranty || 'Không BH', oNote
         ]);
       }
     });
