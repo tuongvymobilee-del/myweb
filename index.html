@@ -111,11 +111,11 @@
     .app-view.active { display: block; animation: fadeInView 0.2s ease; }
     @keyframes fadeInView { from { opacity: 0; } to { opacity: 1; } }
 
-    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1.5px solid var(--border); z-index: 95; padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px)) 4px; box-shadow: 0 -4px 14px rgba(0,0,0,0.06); }
-    .bottom-nav-grid { display: grid; grid-template-columns: repeat(6, 1fr); text-align: center; }
-    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: #64748b; text-decoration: none; font-size: 0.64rem; font-weight: 600; cursor: pointer; padding: 4px 1px; }
+    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1.5px solid var(--border); z-index: 95; padding: 4px 2px calc(4px + env(safe-area-inset-bottom, 0px)) 2px; box-shadow: 0 -4px 14px rgba(0,0,0,0.06); }
+    .bottom-nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); text-align: center; }
+    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #64748b; text-decoration: none; font-size: 0.62rem; font-weight: 600; cursor: pointer; padding: 3px 0; }
     .bottom-nav-item.active { color: var(--primary); font-weight: 800; }
-    .bottom-nav-icon { font-size: 1.15rem; }
+    .bottom-nav-icon { font-size: 1.1rem; line-height: 1.1; }
 
     @media (max-width: 768px) {
       .sidebar { display: none !important; }
@@ -1275,18 +1275,24 @@
   </div>
 
   <nav class="bottom-nav">
-    <div class="bottom-nav-grid">
-      <a class="bottom-nav-item active" data-page="home" onclick="navigateTo('home')"><span class="bottom-nav-icon">🏠</span><span>Trang chủ</span></a>
-      <a class="bottom-nav-item" data-page="sales" onclick="navigateTo('sales')"><span class="bottom-nav-icon">🛒</span><span>Bán hàng</span></a>
-      <a class="bottom-nav-item" data-page="orders" onclick="navigateTo('orders')"><span class="bottom-nav-icon">📋</span><span>Đơn hàng</span></a>
-      <a class="bottom-nav-item" data-page="inventory" onclick="navigateTo('inventory')"><span class="bottom-nav-icon">📦</span><span>Kho hàng</span></a>
-      <a class="bottom-nav-item" data-page="customers" onclick="navigateTo('customers')"><span class="bottom-nav-icon">👥</span><span>Khách</span></a>
-<a class="bottom-nav-item" data-page="repair" onclick="navigateTo('repair')"><span class="bottom-nav-icon">🔧</span><span>Sửa chữa</span></a>
-      <a class="bottom-nav-item" data-page="settings" onclick="navigateTo('settings')"><span class="bottom-nav-icon">⚙️</span><span>Cài đặt</span></a>
+    <div class="bottom-nav-grid" style="grid-template-columns: repeat(5, 1fr);">
+      <a class="bottom-nav-item active" data-page="home" onclick="navigateTo('home')">
+        <span class="bottom-nav-icon">🏠</span><span>Trang chủ</span>
+      </a>
+      <a class="bottom-nav-item" data-page="sales" onclick="navigateTo('sales')">
+        <span class="bottom-nav-icon">🛒</span><span>Bán hàng</span>
+      </a>
+      <a class="bottom-nav-item" data-page="orders" onclick="navigateTo('orders')">
+        <span class="bottom-nav-icon">📋</span><span>Đơn hàng</span>
+      </a>
+      <a class="bottom-nav-item" data-page="inventory" onclick="navigateTo('inventory')">
+        <span class="bottom-nav-icon">📦</span><span>Kho hàng</span>
+      </a>
+      <a class="bottom-nav-item" data-page="repair" onclick="navigateTo('repair')">
+        <span class="bottom-nav-icon">🔧</span><span>Sửa chữa</span>
+      </a>
     </div>
   </nav>
-
-</div>
 
 <!-- MODAL THU NỢ ĐƠN HÀNG TỪNG ĐỢT -->
 <div class="modal-overlay" id="debtCollectModal">
