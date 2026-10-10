@@ -418,6 +418,7 @@
       <li><a class="nav-item" data-page="inventory" onclick="navigateTo('inventory')"><span class="nav-item-icon">📦</span> <span>Kho Hàng</span></a></li>
       <li><a class="nav-item" data-page="stockin" onclick="navigateTo('stockin')"><span class="nav-item-icon">📥</span> <span>Nhập Hàng</span></a></li>
       <li><a class="nav-item" data-page="customers" onclick="navigateTo('customers')"><span class="nav-item-icon">👥</span> <span>Khách Hàng</span></a></li>
+<li><a class="nav-item" data-page="repair" onclick="navigateTo('repair')"><span class="nav-item-icon">🔧</span> <span>Sửa Chữa</span></a></li>
       <li><a class="nav-item" data-page="settings" onclick="navigateTo('settings')"><span class="nav-item-icon">⚙️</span> <span>Cài Đặt</span></a></li>
     </ul>
 
@@ -481,6 +482,7 @@
             <button class="pill-filter-btn" data-range="this_month" onclick="setStatsFilterRange('this_month')">Tháng này</button>
             <button class="pill-filter-btn" data-range="last_month" onclick="setStatsFilterRange('last_month')">Tháng trước</button>
             <button class="pill-filter-btn" data-range="all" onclick="setStatsFilterRange('all')">Tất cả</button>
+	    <button class="pill-filter-btn" data-range="custom" onclick="setStatsFilterRange('custom')">Chọn ngày cụ thể</button>
           </div>
           
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
@@ -970,6 +972,109 @@
         </div>
       </section>
 
+<!-- TRANG SỬA CHỮA ĐIỆN THOẠI -->
+  <section id="viewRepair" class="app-view">
+    <div class="form-card">
+      <h2>🔧 Tiếp Nhận Máy Sửa Chữa & Theo Dõi Tiến Độ</h2>
+      
+      <div class="form-grid" style="margin-bottom:10px;">
+        <div class="form-group">
+          <label>Nhân viên nhận máy</label>
+          <input type="text" id="repairStaffDisplay" readonly style="background:#f8fafc; color:#475569; font-weight:700;">
+        </div>
+        <div class="form-group">
+          <label>Ngày nhận máy</label>
+          <input type="date" id="repairDate">
+        </div>
+        <div class="form-group">
+          <label>Số điện thoại khách</label>
+          <input type="text" id="repairCustPhone" placeholder="VD: 0987123456..." maxlength="15">
+        </div>
+        <div class="form-group">
+          <label>Tên khách hàng</label>
+          <input type="text" id="repairCustName" placeholder="VD: Anh Nam...">
+        </div>
+        <div class="form-group">
+          <label>Model Thiết bị (VD: iPhone 12 Pro)</label>
+          <input type="text" id="repairDeviceModel" placeholder="VD: iPhone 11, Samsung A23...">
+        </div>
+        <div class="form-group">
+          <label>Số IMEI / Serial (Để quản lý bảo hành linh kiện)</label>
+          <input type="text" id="repairImei" placeholder="VD: 354921098765432...">
+        </div>
+        <div class="form-group">
+          <label>Mật khẩu mở máy (Nếu cần test tính năng)</label>
+          <input type="text" id="repairPassword" placeholder="VD: 123456 hoặc vuốt hình...">
+        </div>
+        <div class="form-group">
+          <label>Tình trạng ngoại quan lúc nhận</label>
+          <input type="text" id="repairCondition" placeholder="VD: Trầy viền nhẹ, kính cam sau nứt...">
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>Lỗi khách báo & Yêu cầu sửa chữa</label>
+          <input type="text" id="repairIssue" placeholder="VD: Máy mất nguồn, sụp nguồn liên tục, thay pin mới...">
+        </div>
+        <div class="form-group">
+          <label>Chi phí dự kiến (VNĐ)</label>
+          <input type="text" id="repairEstimatePrice" placeholder="500.000" oninput="formatMoneyInput(this)">
+        </div>
+        <div class="form-group">
+          <label>Tiền cọc trước (VNĐ)</label>
+          <input type="text" id="repairDeposit" placeholder="100.000" oninput="formatMoneyInput(this)">
+        </div>
+        <div class="form-group">
+          <label>Thời gian hẹn trả máy</label>
+          <input type="text" id="repairPromiseTime" placeholder="VD: 17h chiều nay / Ngày mai">
+        </div>
+        <div class="form-group">
+          <label>Trạng thái phiếu sửa chữa</label>
+          <select id="repairStatus" style="font-weight:700;">
+            <option value="1_Mới tiếp nhận">1. Mới tiếp nhận (Chờ kiểm tra)</option>
+            <option value="2_Đang báo giá">2. Đang chẩn đoán & Báo giá khách</option>
+            <option value="3_Đang sửa chữa">3. Kỹ thuật đang tiến hành sửa chữa</option>
+            <option value="4_Đã hoàn thành">4. Đã xong (Sẵn sàng giao khách)</option>
+            <option value="5_Đã giao khách">5. Đã bàn giao & Thanh toán</option>
+          </select>
+        </div>
+      </div>
+      
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button type="button" class="btn-submit" style="flex:1;" onclick="saveRepairTicket(false)">💾 Lưu Phiếu Sửa Chữa</button>
+        <button type="button" class="btn-submit-print" style="flex:1;" onclick="saveRepairTicket(true)">🖨️ Lưu & In Biên Nhận</button>
+      </div>
+    </div>
+
+    <!-- Danh sách phiếu sửa chữa đang xử lý -->
+    <div class="form-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h2 style="margin-bottom:0;">📋 Danh Sách Phiếu Sửa Chữa</h2>
+      </div>
+      
+      <div class="search-box-container" style="margin-bottom:10px;">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="repairSearchInput" class="search-input" placeholder="Tìm theo Tên khách, SĐT, Model máy, IMEI..." oninput="renderRepairTickets()">
+      </div>
+
+      <div class="table-desktop-view">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã / Ngày</th>
+              <th>Khách hàng & SĐT</th>
+              <th>Thiết bị & IMEI</th>
+              <th>Lỗi khách báo</th>
+              <th>Dự kiến / Cọc</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="repairTableBodyDesktop"></tbody>
+        </table>
+      </div>
+      <div class="cards-mobile-view" id="repairCardsMobileContainer"></div>
+    </div>
+  </section>
+
       <!-- TRANG 7: CÀI ĐẶT -->
       <section id="viewSettings" class="app-view">
         <div class="form-card">
@@ -1176,6 +1281,7 @@
       <a class="bottom-nav-item" data-page="orders" onclick="navigateTo('orders')"><span class="bottom-nav-icon">📋</span><span>Đơn hàng</span></a>
       <a class="bottom-nav-item" data-page="inventory" onclick="navigateTo('inventory')"><span class="bottom-nav-icon">📦</span><span>Kho hàng</span></a>
       <a class="bottom-nav-item" data-page="customers" onclick="navigateTo('customers')"><span class="bottom-nav-icon">👥</span><span>Khách</span></a>
+<a class="bottom-nav-item" data-page="repair" onclick="navigateTo('repair')"><span class="bottom-nav-icon">🔧</span><span>Sửa chữa</span></a>
       <a class="bottom-nav-item" data-page="settings" onclick="navigateTo('settings')"><span class="bottom-nav-icon">⚙️</span><span>Cài đặt</span></a>
     </div>
   </nav>
@@ -1444,6 +1550,73 @@
 </div>
 
 <script>
+function convertRepairToOrder(id) {
+    const r = repairTickets.find(x => x.id === id);
+    if (!r) return;
+
+    if (r.status === '5_Đã giao khách') {
+      return alert('Phiếu sửa chữa này đã được chuyển thành đơn hàng trước đó rồi!');
+    }
+
+    const remainPay = Math.max(0, r.estimatePrice - r.deposit);
+
+    // 💡 Bật hộp thoại hỏi và cho phép nhập linh hoạt giá vốn thực tế của máy/linh kiện sửa chữa
+    const inputCostStr = prompt(
+      `Xác nhận hoàn tất sửa chữa cho máy [${r.deviceModel}] của khách [${r.customerName}]?\n\n` +
+      `- Tổng chi phí sửa: ${r.estimatePrice.toLocaleString('vi-VN')} đ\n` +
+      `- Đã cọc trước: ${r.deposit.toLocaleString('vi-VN')} đ\n` +
+      `- Thu thêm khi giao: ${remainPay.toLocaleString('vi-VN')} đ\n\n` +
+      `Nhập GIÁ VỐN linh kiện/vật tư cho ca sửa này (nếu có lấy từ kho hoặc mua ngoài):`, 
+      "0"
+    );
+
+    if (inputCostStr === null) return; // Bấm hủy
+
+    const itemCost = parseFloat(inputCostStr.replace(/\D/g, '')) || 0;
+    const staffName = currentUser ? currentUser.name : "Tường Vy";
+    const newOrderId = 'TV' + Math.floor(1000 + Math.random() * 9000);
+
+    const newOrder = {
+      id: newOrderId,
+      staff: staffName,
+      customerName: r.customerName,
+      customerPhone: r.customerPhone,
+      note: `[Sửa chữa #${r.id}] Model: ${r.deviceModel} | IMEI: ${r.imei || 'N/A'} | Lỗi: ${r.issue}`,
+      date: getTodayVN(),
+      createdAtTime: getTimeVN(),
+      items: [{
+        device: `Sửa chữa: ${r.deviceModel} (${r.issue})`,
+        service: 'Dịch vụ sửa chữa',
+        qty: 1,
+        price: r.estimatePrice,
+        cost: itemCost, // Ghi nhận chính xác giá vốn bạn vừa nhập
+        warranty: '3 tháng'
+      }],
+      totalQty: 1,
+      subtotal: r.estimatePrice,
+      discount: 0,
+      price: r.estimatePrice,
+      cost: itemCost, // Tổng giá vốn của đơn
+      paymentMode: remainPay > 0 ? 'debt' : 'full',
+      paidAmount: r.estimatePrice,
+      debtAmount: 0,
+      dueDate: ''
+    };
+
+    // Đưa đơn vào danh sách doanh thu chính
+    orders.unshift(newOrder);
+    syncOrdersToCloud();
+
+    // Cập nhật trạng thái phiếu sửa chữa thành đã giao khách
+    r.status = '5_Đã giao khách';
+    syncRepairToCloud();
+
+    alert(`✅ Đã tạo thành công Đơn hàng #${newOrderId}!\n- Doanh thu: ${r.estimatePrice.toLocaleString('vi-VN')} đ\n- Giá vốn: ${itemCost.toLocaleString('vi-VN')} đ\n- Lợi nhuận ròng: ${(r.estimatePrice - itemCost).toLocaleString('vi-VN')} đ`);
+    
+    // Mở bảng in biên lai giao máy cho khách
+    openInvoice(newOrderId);
+  }
+
 function getTodayVN() {
     const d = new Date();
     const p = new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(d);
@@ -2339,39 +2512,59 @@ function restoreFullDatabaseJSON(event) {
 
   function printRepairReceipt(order, item, reason, repairInfo) {
     currentPrintOrder = order;
-    document.getElementById('billMainTitle').textContent = "PHIẾU TIẾP NHẬN BẢO HÀNH & SỬA CHỮA";
+    
+    // Đổi tiêu đề chính thành Phiếu biên nhận sửa chữa thiết bị
+    document.getElementById('billMainTitle').textContent = "PHIẾU BIÊN NHẬN SỬA CHỮA & BẢO HÀNH";
     document.getElementById('billId').textContent = '#' + order.id;
     document.getElementById('billDate').textContent = `${formatDateVN(getTodayVN())} ${getTimeVN()}`;
     document.getElementById('billStaff').textContent = currentUser ? currentUser.name : "Tường Vy";
     document.getElementById('billCustName').textContent = order.customerName || 'Khách lẻ';
     document.getElementById('billCustPhone').textContent = order.customerPhone || '---';
 
+    // Hiển thị thông tin chi tiết tình trạng và mật khẩu máy nhận
     const noteRow = document.getElementById('billNoteRow');
-    document.getElementById('billNote').textContent = `Lý do bảo hành: ${reason} | Thông tin máy: ${repairInfo}`;
+    document.getElementById('billNote').textContent = `Tình trạng / Lỗi: ${reason} | Thông tin máy / MK: ${repairInfo || 'Không có'}`;
     noteRow.style.display = 'flex';
 
+    // Đổ dữ liệu thiết bị vào bảng in K80
+    const thead = document.getElementById('billTableHead');
     const tbody = document.getElementById('billItemsTableBody');
-    const summary = document.getElementById('billSummaryBlock');
+    const summaryBlock = document.getElementById('billSummaryBlock');
+
+    thead.innerHTML = `
+      <tr>
+        <th style="text-align: left; width: 50%;">Nội dung dịch vụ / Linh kiện</th>
+        <th style="text-align: center; width: 20%;">SL</th>
+        <th style="text-align: right; width: 30%;">Đơn giá</th>
+      </tr>
+    `;
+
     tbody.innerHTML = `
       <tr>
-        <td colspan="3" class="k80-item-name">
+        <td colspan="3" class="k80-item-name" style="padding-bottom:2px !important;">
           <strong>${item.device}</strong><br>
-          <span style="font-size:10px; color:#555;">[Tình trạng: ${reason}]</span>
+          <span style="font-size:9.5px; color:#444;">[Bảo hành: ${item.warranty || '1 tháng'}]</span>
         </td>
       </tr>
       <tr class="k80-row-values">
-        <td style="text-align:left;">Bảo hành</td>
-        <td style="text-align:center;">1</td>
-        <td style="text-align:right; font-weight:bold;">0 đ</td>
+        <td style="text-align: left; font-size:10px;">Phí dịch vụ / Sửa chữa</td>
+        <td style="text-align: center; font-size:10px;">1</td>
+        <td style="text-align: right; font-weight: bold;">${(item.price || 0).toLocaleString('vi-VN')} đ</td>
       </tr>
     `;
-    summary.innerHTML = `
-      <div class="bill-summary-row total-bold">
-        <span>Chi phí tạm tính:</span>
-        <span style="color:var(--success);">0 đ (Bảo hành)</span>
+
+    summaryBlock.innerHTML = `
+      <div class="bill-summary-row total-bold" style="border-top:1px dashed #000; padding-top:4px; margin-top:4px;">
+        <span>TỔNG CHI PHÍ TẠM TÍNH:</span>
+        <span style="color: var(--danger);">${(item.price || 0).toLocaleString('vi-VN')} đ</span>
       </div>
     `;
+
     document.getElementById('billQRWrap').style.display = 'none';
+
+    // Kích hoạt hiển thị khung chữ ký bàn giao ở cuối phiếu biên nhận
+    const signaturesEl = document.querySelector('.bill-signatures');
+    if (signaturesEl) signaturesEl.style.display = 'flex';
 
     switchPrintFormat('k80');
     document.getElementById('invoiceModal').classList.add('active');
@@ -2530,14 +2723,15 @@ function restoreFullDatabaseJSON(event) {
     }
   }
 
-  const VIEW_MAP = {
+ const VIEW_MAP = {
     home: 'viewHome',
     sales: 'viewSales',
     orders: 'viewOrders',
     inventory: 'viewInventory',
     stockin: 'viewStockIn',
     customers: 'viewCustomers',
-    settings: 'viewSettings'
+    settings: 'viewSettings',
+    repair: 'viewRepair' // 👈 Thêm dòng này (nhớ kiểm tra dấu phẩy ở dòng settings phía trên)
   };
 
   const PAGE_TITLES = {
@@ -2547,7 +2741,8 @@ function restoreFullDatabaseJSON(event) {
     inventory: "📦 Kho Hàng",
     stockin: "📥 Nhập Hàng",
     customers: "👥 Khách Hàng",
-    settings: "⚙️ Cài Đặt"
+    settings: "⚙️ Cài Đặt",
+    repair: "🔧 Quản Lý Sửa Chữa Điện Thoại" // 👈 Thêm dòng này
   };
 
   function navigateTo(pageId) {
@@ -2573,7 +2768,13 @@ function restoreFullDatabaseJSON(event) {
     if (pageId === 'stockin') { document.getElementById('inputStockStaffDisplay').value = currentUser ? currentUser.name : "Tường Vy"; }
     if (pageId === 'customers') { renderCustomerManager(); }
     if (pageId === 'settings') { applyBankSettings(); applyDeviceConfigToUI(); }
-
+    if (pageId === 'repair') {
+      const staffInput = document.getElementById('repairStaffDisplay');
+      if (staffInput) staffInput.value = currentUser ? currentUser.name : "Tường Vy";
+      
+      const dateInput = document.getElementById('repairDate');
+      if (dateInput && !dateInput.value) dateInput.value = getTodayVN();
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -2941,9 +3142,14 @@ function applyStoreSettings() {
 
     const customBox = document.getElementById('customDateRangeBox');
     if (range === 'custom') {
-      customBox.style.display = 'grid';
+      customBox.style.display = 'grid'; // Hiện khung chọn ngày khi bấm nút
+      // Mặc định điền sẵn ngày hôm nay vào 2 ô nếu chưa chọn
+      if (!document.getElementById('statsDateFrom').value) {
+        document.getElementById('statsDateFrom').value = getTodayVN();
+        document.getElementById('statsDateTo').value = getTodayVN();
+      }
     } else {
-      customBox.style.display = 'none';
+      customBox.style.display = 'none'; // Ẩn khung chọn ngày đối với các mốc mặc định (Hôm qua, Tháng này...)
       renderDashboard();
     }
   }
@@ -4256,152 +4462,275 @@ function applyStoreSettings() {
     const items = (o.items && Array.isArray(o.items) && o.items.length > 0) ? o.items : [{
       device: o.device || 'Thiết bị / Dịch vụ',
       service: o.service || '',
-      warranty: o.warranty || 'Không BH',
+      warranty: o.warranty || '3 tháng',
       qty: o.qty || 1,
       price: o.price || 0
     }];
+
+    // 💡 Nhận diện chính xác tuyệt đối: Nếu mã đơn bắt đầu bằng 'SC' (từ Tab Sửa Chữa) hoặc ghi chú có chứa thông tin kỹ thuật sửa chữa
+    const isRepairTicket = (o.id && o.id.toString().startsWith('SC')) || 
+                           (o.note && (o.note.includes('[SỬA CHỮA]') || o.note.toLowerCase().includes('imei') || o.note.toLowerCase().includes('mật khẩu')));
+
+    // Cập nhật tiêu đề phiếu in
+    const mainTitleEl = document.getElementById('billMainTitle');
+    if (mainTitleEl) {
+      mainTitleEl.textContent = isRepairTicket ? "PHIẾU BIÊN NHẬN SỬA CHỮA THIẾT BỊ" : "HÓA ĐƠN BÁN HÀNG & BẢO HÀNH";
+    }
 
     let subtotal = 0;
     items.forEach(item => subtotal += (item.price * item.qty));
     const discount = o.discount || 0;
     const finalTotal = o.price || Math.max(0, subtotal - discount);
-    const paidAmt = (o.paidAmount !== undefined) ? o.paidAmount : finalTotal;
-    const debtAmt = (o.debtAmount !== undefined) ? o.debtAmount : 0;
+    const paidAmt = (o.paidAmount !== undefined) ? o.paidAmount : (o.deposit || 0);
+    const debtAmt = Math.max(0, finalTotal - paidAmt);
 
-    let debtRowsHtml = '';
-    if (debtAmt > 0 || (o.installmentSchedules && o.installmentSchedules.length > 0)) {
-      let scheduleDetailsHtml = '';
-      if (o.installmentSchedules && o.installmentSchedules.length > 0) {
-        scheduleDetailsHtml = `<div style="margin-top:4px; border-top:1px dashed #000; padding-top:3px; width:100%; text-align:left;">
-          <div style="font-weight:bold; font-size:10px;">Kỳ hạn thanh toán:</div>`;
-        o.installmentSchedules.forEach(s => {
-          scheduleDetailsHtml += `<div style="display:flex; justify-content:space-between; font-size:9.5px;">
-            <span>Kỳ ${s.period} (${formatDateVN(s.dueDate)}):</span>
-            <span><strong>${s.amount.toLocaleString('vi-VN')}đ</strong> [${s.status}]</span>
-          </div>`;
-        });
-        scheduleDetailsHtml += `</div>`;
+    // Xử lý riêng biệt cho 2 loại biểu mẫu ở khổ K80, A5, A4
+    if (isRepairTicket) {
+      // ==========================================
+      // 📌 GIAO DIỆN CHUẨN: PHIẾU BIÊN NHẬN SỬA CHỮA
+      // ==========================================
+      
+      // Trích xuất thông tin kỹ thuật từ ghi chú nếu có (IMEI, MK, Tình trạng...)
+      let repairDetailsHtml = '';
+      if (o.note && o.note.includes('[SỬA CHỮA]')) {
+        repairDetailsHtml = `<div style="background:#f8fafc; border:1px solid #cbd5e1; padding:6px; border-radius:6px; margin-bottom:8px; font-size:10px; line-height:1.4;">
+          <strong>THÔNG TIN KỸ THUẬT TIẾP NHẬN:</strong><br>${o.note.replace('[SỬA CHỮA]', '').trim()}
+        </div>`;
       }
 
-      debtRowsHtml = `
-        <div class="bill-summary-row" style="color:var(--success); font-weight:bold;">
-          <span>Khách đã đưa trước:</span>
-          <span>${paidAmt.toLocaleString('vi-VN')} đ</span>
-        </div>
-        <div class="bill-summary-row total-bold" style="color:var(--danger); border-top:1px dashed #000; padding-top:2px;">
-          <span>SỐ TIỀN CÒN NỢ:</span>
-          <span>${debtAmt.toLocaleString('vi-VN')} đ</span>
-        </div>
-        ${scheduleDetailsHtml}
-      `;
-    }
-
-    if (fmt === 'k80') {
-      thead.innerHTML = `
-        <tr>
-          <th style="text-align: left; width: 36%;">Đơn giá</th>
-          <th style="text-align: center; width: 28%;">SL</th>
-          <th style="text-align: right; width: 36%;">Thành tiền</th>
-        </tr>
-      `;
-
-      items.forEach(item => {
-        const lineTotal = item.price * item.qty;
-        const trName = document.createElement('tr');
-        trName.innerHTML = `
-          <td colspan="3" class="k80-item-name">
-            ${item.device}
-            ${item.warranty && item.warranty !== 'Không BH' ? `<span style="font-weight:normal; font-size:9.5px; color:#444;"> [BH: ${item.warranty}]</span>` : ''}
-          </td>
+      if (fmt === 'k80') {
+        thead.innerHTML = `
+          <tr>
+            <th style="text-align: left; width: 45%;">Tác vụ / Linh kiện thay thế</th>
+            <th style="text-align: center; width: 15%;">SL</th>
+            <th style="text-align: right; width: 40%;">Dự kiến</th>
+          </tr>
         `;
-        tbody.appendChild(trName);
 
-        const trVal = document.createElement('tr');
-        trVal.className = 'k80-row-values';
-        trVal.innerHTML = `
-          <td style="text-align: left;">${item.price.toLocaleString('vi-VN')}</td>
-          <td style="text-align: center;">${item.qty}</td>
-          <td style="text-align: right; font-weight: bold;">${lineTotal.toLocaleString('vi-VN')}</td>
+        items.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.className = 'k80-row-values';
+          tr.innerHTML = `
+            <td colspan="3" class="k80-item-name" style="padding-bottom:2px !important;">
+              <strong>${item.device}</strong><br>
+              <span style="font-size:9.5px; color:#555;">[Bảo hành dịch vụ: ${item.warranty || '3 tháng'}]</span>
+            </td>
+          `;
+          tbody.appendChild(tr);
+
+          const trVal = document.createElement('tr');
+          trVal.className = 'k80-row-values';
+          trVal.innerHTML = `
+            <td style="text-align: left; font-size:10px;">Phí dịch vụ:</td>
+            <td style="text-align: center; font-size:10px;">${item.qty}</td>
+            <td style="text-align: right; font-weight: bold; font-size:11px;">${(item.price * item.qty).toLocaleString('vi-VN')} đ</td>
+          `;
+          tbody.appendChild(trVal);
+        });
+
+        summaryBlock.innerHTML = `
+          ${repairDetailsHtml}
+          <div class="bill-summary-row total-bold" style="border-top:1px dashed #000; padding-top:4px; margin-top:2px;">
+            <span>TỔNG CHI PHÍ DỰ KIẾN:</span>
+            <span style="font-size: 13px; color: var(--danger);">${finalTotal.toLocaleString('vi-VN')} đ</span>
+          </div>
+          <div class="bill-summary-row" style="color:#047857; font-weight:bold; margin-top:2px;">
+            <span>Tiền cọc trước:</span>
+            <span>${paidAmt.toLocaleString('vi-VN')} đ</span>
+          </div>
+          <div class="bill-summary-row total-bold" style="color:var(--danger); border-top:1px dashed #000; padding-top:2px;">
+            <span>CÒN LẠI THANH TOÁN:</span>
+            <span>${debtAmt.toLocaleString('vi-VN')} đ</span>
+          </div>
         `;
-        tbody.appendChild(trVal);
-      });
 
-      let discountRowHtml = discount > 0 ? `
-        <div class="bill-summary-row">
-          <span>Giảm giá:</span>
-          <strong>-${discount.toLocaleString('vi-VN')}</strong>
-        </div>
-      ` : '';
-
-      summaryBlock.innerHTML = `
-        <div class="bill-summary-row">
-          <span>Tổng tiền hàng:</span>
-          <strong>${subtotal.toLocaleString('vi-VN')}</strong>
-        </div>
-        ${discountRowHtml}
-        <div class="bill-summary-row total-bold">
-          <span>Tổng cộng bill:</span>
-          <span style="font-size: 13px; color: var(--danger);">${finalTotal.toLocaleString('vi-VN')}</span>
-        </div>
-        ${debtRowsHtml}
-      `;
-
-    } else {
-      thead.innerHTML = `
-        <tr>
-          <th style="width: 6%;">STT</th>
-          <th style="text-align: left;">Hàng hóa / Dịch vụ</th>
-          <th style="width: 14%;">Nhóm DV</th>
-          <th style="width: 12%;">BH</th>
-          <th style="width: 8%;">SL</th>
-          <th style="text-align: right; width: 18%;">Đơn giá</th>
-          <th style="text-align: right; width: 20%;">Thành tiền</th>
-        </tr>
-      `;
-
-      items.forEach((item, idx) => {
-        const lineTotal = item.price * item.qty;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="text-align: center;">${idx + 1}</td>
-          <td style="text-align: left; font-weight: bold;">${item.device}</td>
-          <td style="text-align: center; color: #555;">${item.service || 'Phụ kiện'}</td>
-          <td style="text-align: center;">${item.warranty || 'Không BH'}</td>
-          <td style="text-align: center; font-weight: bold;">${item.qty}</td>
-          <td style="text-align: right;">${item.price.toLocaleString('vi-VN')}</td>
-          <td style="text-align: right; font-weight: bold;">${lineTotal.toLocaleString('vi-VN')}</td>
+      } else {
+        // Khổ A5 / A4 cho Biên Nhận Sửa Chữa
+        thead.innerHTML = `
+          <tr>
+            <th style="width: 6%;">STT</th>
+            <th style="text-align: left;">Nội dung sửa chữa / Linh kiện thay thế</th>
+            <th style="width: 15%;">Bảo hành</th>
+            <th style="width: 8%;">SL</th>
+            <th style="text-align: right; width: 22%;">Chi phí dự kiến</th>
+          </tr>
         `;
-        tbody.appendChild(tr);
-      });
 
-      let discountRowHtmlA4 = discount > 0 ? `
-        <div class="bill-summary-row">
-          <span>Giảm giá khuyến mãi:</span>
-          <strong>-${discount.toLocaleString('vi-VN')} đ</strong>
-        </div>
-      ` : '';
+        items.forEach((item, idx) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="text-align: center;">${idx + 1}</td>
+            <td style="text-align: left; font-weight: bold;">${item.device}</td>
+            <td style="text-align: center;">${item.warranty || '3 tháng'}</td>
+            <td style="text-align: center; font-weight: bold;">${item.qty}</td>
+            <td style="text-align: right; font-weight: bold;">${(item.price * item.qty).toLocaleString('vi-VN')} đ</td>
+          `;
+          tbody.appendChild(tr);
+        });
 
-      summaryBlock.innerHTML = `
-        <div class="bill-summary-row">
-          <span>Tổng tiền hàng:</span>
-          <strong>${subtotal.toLocaleString('vi-VN')} đ</strong>
-        </div>
-        ${discountRowHtmlA4}
-        <div class="bill-summary-row total-bold">
-          <span>TỔNG CỘNG:</span>
-          <span style="color: var(--danger);">${finalTotal.toLocaleString('vi-VN')} đ</span>
-        </div>
-        ${debtRowsHtml}
-      `;
-    }
+        summaryBlock.innerHTML = `
+          ${repairDetailsHtml}
+          <div class="bill-summary-row total-bold" style="font-size: 15px;">
+            <span>TỔNG CHI PHÍ DỰ KIẾN:</span>
+            <span style="color: var(--danger);">${finalTotal.toLocaleString('vi-VN')} đ</span>
+          </div>
+          <div class="bill-summary-row">
+            <span>Đã cọc trước:</span>
+            <span style="color: #047857; font-weight: bold;">${paidAmt.toLocaleString('vi-VN')} đ</span>
+          </div>
+          <div class="bill-summary-row total-bold" style="border-top: 1px solid #000; padding-top: 4px;">
+            <span>CÒN LẠI THANH TOÁN KHI NHẬN MÁY:</span>
+            <span style="color: var(--danger);">${debtAmt.toLocaleString('vi-VN')} đ</span>
+          </div>
+        `;
+      }
 
-    const billQRImg = document.getElementById('billQRImage');
-    const qrAmt = (debtAmt > 0) ? paidAmt : finalTotal;
-    if (billQRImg && qrAmt > 0) {
-      billQRImg.src = generateVietQRUrl(qrAmt, o.id);
-      document.getElementById('billQRWrap').style.display = 'block';
-    } else {
+      // Luôn bật khung chữ ký biên nhận cho phiếu sửa chữa
+      const signaturesEl = document.querySelector('.bill-signatures');
+      if (signaturesEl) signaturesEl.style.display = 'flex';
       document.getElementById('billQRWrap').style.display = 'none';
+
+    } else {
+      // ==========================================
+      // 📌 GIAO DIỆN CHUẨN: HÓA ĐƠN BÁN HÀNG (GIỮ NGUYÊN)
+      // ==========================================
+      if (fmt === 'k80') {
+        thead.innerHTML = `
+          <tr>
+            <th style="text-align: left; width: 44%;">Tên hàng / Dịch vụ</th>
+            <th style="text-align: center; width: 16%;">SL</th>
+            <th style="text-align: right; width: 40%;">T.Tiền</th>
+          </tr>
+        `;
+
+        items.forEach(item => {
+          const lineTotal = item.price * item.qty;
+          const tr = document.createElement('tr');
+          tr.className = 'k80-row-values';
+          tr.innerHTML = `
+            <td colspan="3" class="k80-item-name" style="padding-bottom:1px !important;">
+              <strong>${item.device}</strong>
+              ${item.warranty && item.warranty !== 'Không BH' ? `<span style="font-weight:normal; font-size:9.5px; color:#333;"> [BH: ${item.warranty}]</span>` : ''}
+            </td>
+          `;
+          tbody.appendChild(tr);
+
+          const trVal = document.createElement('tr');
+          trVal.className = 'k80-row-values';
+          trVal.innerHTML = `
+            <td style="text-align: left; color:#444; font-size:10px;">${item.price.toLocaleString('vi-VN')} đ</td>
+            <td style="text-align: center; color:#444; font-size:10px;">x${item.qty}</td>
+            <td style="text-align: right; font-weight: bold;">${lineTotal.toLocaleString('vi-VN')} đ</td>
+          `;
+          tbody.appendChild(trVal);
+        });
+
+        let discountRowHtml = discount > 0 ? `
+          <div class="bill-summary-row">
+            <span>Giảm giá:</span>
+            <strong>-${discount.toLocaleString('vi-VN')} đ</strong>
+          </div>
+        ` : '';
+// 👉 BẠN THAY THẾ HOẶC CẬP NHẬT ĐOẠN HIỂN THỊ NỢ NÀY:
+        let debtRowsHtml = '';
+        if (debtAmt > 0) {
+          let scheduleDetailsHtml = '';
+          if (o.installmentSchedules && Array.isArray(o.installmentSchedules) && o.installmentSchedules.length > 0) {
+            scheduleDetailsHtml = `<div style="margin-top:4px; border-top:1px dashed #000; padding-top:3px; width:100%; text-align:left; font-size:10px;">
+              <div style="font-weight:bold; margin-bottom:2px;">Kỳ hạn thanh toán:</div>`;
+            o.installmentSchedules.forEach(s => {
+              scheduleDetailsHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:1px;">
+                <span>Kỳ ${s.period}(${formatDateVN(s.dueDate)}):</span>
+                <span><b>${s.amount.toLocaleString('vi-VN')}đ</b> [${s.status}]</span>
+              </div>`;
+            });
+            scheduleDetailsHtml += `</div>`;
+          }
+
+          debtRowsHtml = `
+            <div class="bill-summary-row" style="color:#047857; font-weight:bold;">
+              <span>Khách đã đưa trước:</span>
+              <span>${paidAmt.toLocaleString('vi-VN')} đ</span>
+            </div>
+            <div class="bill-summary-row total-bold" style="color:var(--danger); border-top:1px dashed #000; padding-top:2px;">
+              <span>SỐ TIỀN CÒN NỢ:</span>
+              <span>${debtAmt.toLocaleString('vi-VN')} đ</span>
+            </div>
+            ${scheduleDetailsHtml}
+          `;
+        }
+
+        summaryBlock.innerHTML = `
+          <div class="bill-summary-row">
+            <span>Tổng tiền hàng:</span>
+            <strong>${subtotal.toLocaleString('vi-VN')} đ</strong>
+          </div>
+          ${discountRowHtml}
+          <div class="bill-summary-row total-bold" style="border-top:1px dashed #000; padding-top:3px; margin-top:2px;">
+            <span>TỔNG CỘNG BILL:</span>
+            <span style="font-size: 13px; color: var(--danger);">${finalTotal.toLocaleString('vi-VN')} đ</span>
+          </div>
+          ${debtRowsHtml}
+        `;
+
+      } else {
+        // Khổ A5 / A4 Bán hàng
+        thead.innerHTML = `
+          <tr>
+            <th style="width: 6%;">STT</th>
+            <th style="text-align: left;">Hàng hóa / Dịch vụ</th>
+            <th style="width: 14%;">Nhóm DV</th>
+            <th style="width: 12%;">Bảo hành</th>
+            <th style="width: 8%;">SL</th>
+            <th style="text-align: right; width: 18%;">Đơn giá</th>
+            <th style="text-align: right; width: 20%;">Thành tiền</th>
+          </tr>
+        `;
+
+        items.forEach((item, idx) => {
+          const lineTotal = item.price * item.qty;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="text-align: center;">${idx + 1}</td>
+            <td style="text-align: left; font-weight: bold;">${item.device}</td>
+            <td style="text-align: center; color: #555;">${item.service || 'Phụ kiện'}</td>
+            <td style="text-align: center;">${item.warranty || 'Không BH'}</td>
+            <td style="text-align: center; font-weight: bold;">${item.qty}</td>
+            <td style="text-align: right;">${item.price.toLocaleString('vi-VN')} đ</td>
+            <td style="text-align: right; font-weight: bold;">${lineTotal.toLocaleString('vi-VN')} đ</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        let discountRowHtmlA4 = discount > 0 ? `
+          <div class="bill-summary-row">
+            <span>Giảm giá:</span>
+            <strong>-${discount.toLocaleString('vi-VN')} đ</strong>
+          </div>
+        ` : '';
+
+        summaryBlock.innerHTML = `
+          <div class="bill-summary-row">
+            <span>Tổng tiền hàng:</span>
+            <strong>${subtotal.toLocaleString('vi-VN')} đ</strong>
+          </div>
+          ${discountRowHtmlA4}
+          <div class="bill-summary-row total-bold">
+            <span>TỔNG CỘNG:</span>
+            <span style="color: var(--danger);">${finalTotal.toLocaleString('vi-VN')} đ</span>
+          </div>
+        `;
+      }
+
+      // Hóa đơn bán hàng thông thường có thể bật QR chuyển khoản
+      const billQRImg = document.getElementById('billQRImage');
+      const qrAmt = (debtAmt > 0) ? paidAmt : finalTotal;
+      if (billQRImg && qrAmt > 0) {
+        billQRImg.src = generateVietQRUrl(qrAmt, o.id);
+        document.getElementById('billQRWrap').style.display = 'block';
+      } else {
+        document.getElementById('billQRWrap').style.display = 'none';
+      }
     }
   }
 
@@ -4410,7 +4739,17 @@ function applyStoreSettings() {
     if (!o) return;
     currentPrintOrder = o;
 
-    document.getElementById('billMainTitle').textContent = "HÓA ĐƠN BÁN HÀNG & BẢO HÀNH";
+    // Kiểm tra thông minh: Nếu đơn có chứa các từ khóa sửa chữa, thay thế, lỗi nguồn... thì tự động kích hoạt chuẩn Biên Nhận Sửa Chữa
+    const isRepair = (o.items && o.items.some(i => {
+      const s = (i.service || '').toLowerCase();
+      const d = (i.device || '').toLowerCase();
+      const n = (o.note || '').toLowerCase();
+      return s.includes('sửa') || s.includes('thay') || s.includes('ép') || d.includes('sửa') || d.includes('thay') || n.includes('sửa') || n.includes('lỗi') || n.includes('nguồn');
+    })) || (o.note && o.note.toLowerCase().includes('sửa chữa'));
+
+    // Đổi tiêu đề chuẩn xác trên hóa đơn in
+    document.getElementById('billMainTitle').textContent = isRepair ? "PHIẾU BIÊN NHẬN SỬA CHỮA THIẾT BỊ" : "HÓA ĐƠN BÁN HÀNG & BẢO HÀNH";
+    
     document.getElementById('billId').textContent = '#' + o.id;
     document.getElementById('billDate').textContent = `${formatDateVN(o.date)} ${o.createdAtTime || ''}`;
     document.getElementById('billStaff').textContent = o.staff || 'Tường Vy';
@@ -4423,6 +4762,124 @@ function applyStoreSettings() {
       noteRow.style.display = 'flex';
     } else {
       noteRow.style.display = 'none';
+    }
+
+    // Tùy chỉnh hiển thị bảng nội dung phù hợp cho Biên Nhận Sửa Chữa
+    const thead = document.getElementById('billTableHead');
+    const tbody = document.getElementById('billItemsTableBody');
+    const summaryBlock = document.getElementById('billSummaryBlock');
+    
+    thead.innerHTML = '';
+    tbody.innerHTML = '';
+    summaryBlock.innerHTML = '';
+
+    const items = (o.items && Array.isArray(o.items) && o.items.length > 0) ? o.items : [{
+      device: o.device || 'Thiết bị / Dịch vụ',
+      service: o.service || '',
+      warranty: o.warranty || '3 tháng',
+      qty: o.qty || 1,
+      price: o.price || 0
+    }];
+
+    let subtotal = 0;
+    items.forEach(item => subtotal += (item.price * item.qty));
+    const finalTotal = o.price || subtotal;
+    const paidAmt = (o.paidAmount !== undefined) ? o.paidAmount : (o.deposit || 0);
+    const debtAmt = Math.max(0, finalTotal - paidAmt);
+
+    if (isRepair) {
+      // 📌 Bố cục riêng cho Phiếu Biên Nhận Sửa Chữa
+      thead.innerHTML = `
+        <tr>
+          <th style="text-align: left; width: 50%;">Nội dung dịch vụ / Linh kiện</th>
+          <th style="text-align: center; width: 18%;">SL</th>
+          <th style="text-align: right; width: 32%;">Đơn giá</th>
+        </tr>
+      `;
+
+      items.forEach(item => {
+        const lineTotal = item.price * item.qty;
+        const tr = document.createElement('tr');
+        tr.className = 'k80-row-values';
+        tr.innerHTML = `
+          <td colspan="3" class="k80-item-name" style="padding-bottom:2px !important;">
+            <strong>${item.device}</strong><br>
+            <span style="font-size:9.5px; color:#444;">[Bảo hành: ${item.warranty || '3 tháng'}]</span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+
+        const trVal = document.createElement('tr');
+        trVal.className = 'k80-row-values';
+        trVal.innerHTML = `
+          <td style="text-align: left; font-size:10px;">Phí dịch vụ</td>
+          <td style="text-align: center; font-size:10px;">${item.qty}</td>
+          <td style="text-align: right; font-weight: bold; font-size:11px;">${lineTotal.toLocaleString('vi-VN')} đ</td>
+        `;
+        tbody.appendChild(trVal);
+      });
+
+      let depositRowHtml = paidAmt > 0 ? `
+        <div class="bill-summary-row" style="color:#047857; font-weight:bold;">
+          <span>Khách đã cọc trước:</span>
+          <span>${paidAmt.toLocaleString('vi-VN')} đ</span>
+        </div>
+        <div class="bill-summary-row total-bold" style="color:var(--danger); border-top:1px dashed #000; padding-top:2px;">
+          <span>CÒN LẠI THANH TOÁN:</span>
+          <span>${debtAmt.toLocaleString('vi-VN')} đ</span>
+        </div>
+      ` : '';
+
+      summaryBlock.innerHTML = `
+        <div class="bill-summary-row total-bold" style="border-top:1px dashed #000; padding-top:4px; margin-top:2px;">
+          <span>TỔNG CHI PHÍ DỰ KIẾN:</span>
+          <span style="font-size: 13px; color: var(--danger);">${finalTotal.toLocaleString('vi-VN')} đ</span>
+        </div>
+        ${depositRowHtml}
+      `;
+
+      // Bật hiển thị khung chữ ký bàn giao thiết bị
+      const signaturesEl = document.querySelector('.bill-signatures');
+      if (signaturesEl) signaturesEl.style.display = 'flex';
+      document.getElementById('billQRWrap').style.display = 'none';
+
+    } else {
+      // 📌 Bố cục Hóa đơn bán hàng thông thường
+      thead.innerHTML = `
+        <tr>
+          <th style="text-align: left; width: 44%;">Tên hàng / Dịch vụ</th>
+          <th style="text-align: center; width: 16%;">SL</th>
+          <th style="text-align: right; width: 40%;">T.Tiền</th>
+        </tr>
+      `;
+
+      items.forEach(item => {
+        const lineTotal = item.price * item.qty;
+        const tr = document.createElement('tr');
+        tr.className = 'k80-row-values';
+        tr.innerHTML = `
+          <td colspan="3" class="k80-item-name" style="padding-bottom:1px !important;">
+            <strong>${item.device}</strong>
+          </td>
+        `;
+        tbody.appendChild(tr);
+
+        const trVal = document.createElement('tr');
+        trVal.className = 'k80-row-values';
+        trVal.innerHTML = `
+          <td style="text-align: left; color:#444; font-size:10px;">${item.price.toLocaleString('vi-VN')} đ</td>
+          <td style="text-align: center; color:#444; font-size:10px;">x${item.qty}</td>
+          <td style="text-align: right; font-weight: bold;">${lineTotal.toLocaleString('vi-VN')} đ</td>
+        `;
+        tbody.appendChild(trVal);
+      });
+
+      summaryBlock.innerHTML = `
+        <div class="bill-summary-row total-bold" style="border-top:1px dashed #000; padding-top:3px; margin-top:2px;">
+          <span>TỔNG CỘNG BILL:</span>
+          <span style="font-size: 13px; color: var(--danger);">${finalTotal.toLocaleString('vi-VN')} đ</span>
+        </div>
+      `;
     }
 
     switchPrintFormat(deviceConfig.defaultPrintFormat || 'k80');
@@ -4737,7 +5194,303 @@ function applyStoreSettings() {
       XLSX.writeFile(wb, `TuongVyMobile_DuLieu_${Date.now()}.xlsx`);
     }
   }
+let repairTickets = JSON.parse(localStorage.getItem('tuongvy_repair_tickets')) || [];
+  
+  const repairDateEl = document.getElementById('repairDate');
+  if (repairDateEl) repairDateEl.value = getTodayVN();
 
+  if (isFirebaseActive && db) {
+    db.ref('repairTickets').on('value', snapshot => {
+      const val = snapshot.val();
+      if (val) {
+        repairTickets = val;
+        localStorage.setItem('tuongvy_repair_tickets', JSON.stringify(repairTickets));
+        renderRepairTickets();
+      }
+    });
+  }
+
+  function syncRepairToCloud() {
+    localStorage.setItem('tuongvy_repair_tickets', JSON.stringify(repairTickets));
+    if (isFirebaseActive && db) db.ref('repairTickets').set(repairTickets);
+    renderRepairTickets();
+  }
+
+  function saveRepairTicket(shouldPrint) {
+    const custName = document.getElementById('repairCustName').value.trim();
+    const custPhone = document.getElementById('repairCustPhone').value.trim();
+    const deviceModel = document.getElementById('repairDeviceModel').value.trim();
+    const imei = document.getElementById('repairImei').value.trim();
+    const password = document.getElementById('repairPassword').value.trim();
+    const condition = document.getElementById('repairCondition').value.trim();
+    const issue = document.getElementById('repairIssue').value.trim();
+    
+    if (!custName || !custPhone || !deviceModel || !issue) {
+      return alert('Vui lòng điền đầy đủ Tên khách, SĐT, Model máy và Lỗi của máy!');
+    }
+
+    const estimatePrice = parseFloat(document.getElementById('repairEstimatePrice').value.replace(/\D/g, '')) || 0;
+    const deposit = parseFloat(document.getElementById('repairDeposit').value.replace(/\D/g, '')) || 0;
+    const promiseTime = document.getElementById('repairPromiseTime').value.trim();
+    const status = document.getElementById('repairStatus').value;
+    const date = document.getElementById('repairDate').value || getTodayVN();
+    const staff = currentUser ? currentUser.name : "Tường Vy";
+    const ticketId = 'SC' + Math.floor(1000 + Math.random() * 9000);
+
+    const newTicket = {
+      id: ticketId,
+      staff,
+      date,
+      createdAtTime: getTimeVN(),
+      customerName: custName,
+      customerPhone: custPhone,
+      deviceModel,
+      imei,
+      password,
+      condition,
+      issue,
+      estimatePrice,
+      deposit,
+      promiseTime,
+      status
+    };
+
+    repairTickets.unshift(newTicket);
+    syncRepairToCloud();
+
+    document.getElementById('repairCustName').value = '';
+    document.getElementById('repairCustPhone').value = '';
+    document.getElementById('repairDeviceModel').value = '';
+    document.getElementById('repairImei').value = '';
+    document.getElementById('repairPassword').value = '';
+    document.getElementById('repairCondition').value = '';
+    document.getElementById('repairIssue').value = '';
+    document.getElementById('repairEstimatePrice').value = '';
+    document.getElementById('repairDeposit').value = '';
+    document.getElementById('repairPromiseTime').value = '';
+
+    alert(`✅ Đã tạo phiếu sửa chữa #${ticketId} thành công!`);
+
+    if (shouldPrint) {
+      openRepairInvoice(ticketId);
+    }
+  }
+
+  function renderRepairTickets() {
+    const tbody = document.getElementById('repairTableBodyDesktop');
+    const mobileContainer = document.getElementById('repairCardsMobileContainer');
+    if (!tbody || !mobileContainer) return;
+
+    tbody.innerHTML = '';
+    mobileContainer.innerHTML = '';
+
+    const query = (document.getElementById('repairSearchInput') ? document.getElementById('repairSearchInput').value : '').trim().toLowerCase();
+
+    const list = repairTickets.filter(r => {
+      if (!query) return true;
+      return (r.id && r.id.toLowerCase().includes(query)) ||
+             (r.customerName && r.customerName.toLowerCase().includes(query)) ||
+             (r.customerPhone && r.customerPhone.includes(query)) ||
+             (r.deviceModel && r.deviceModel.toLowerCase().includes(query)) ||
+             (r.imei && r.imei.toLowerCase().includes(query)) ||
+             (r.issue && r.issue.toLowerCase().includes(query));
+    });
+
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:18px; color:var(--text-muted);">Chưa có phiếu sửa chữa nào</td></tr>`;
+      mobileContainer.innerHTML = `<div style="text-align:center; padding:18px; color:var(--text-muted); font-size:0.85rem;">Chưa có phiếu sửa chữa nào</div>`;
+      return;
+    }
+
+    list.forEach(r => {
+      const cleanPhone = (r.customerPhone || '').replace(/\s/g, '');
+      let statusBadgeColor = '#2563eb';
+      if (r.status.startsWith('2')) statusBadgeColor = '#d97706';
+      if (r.status.startsWith('3')) statusBadgeColor = '#9333ea';
+      if (r.status.startsWith('4')) statusBadgeColor = '#059669';
+      if (r.status.startsWith('5')) statusBadgeColor = '#64748b';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>#${r.id}</strong><br><small>${formatDateVN(r.date)}</small></td>
+        <td><strong>${r.customerName}</strong><br><a href="tel:${cleanPhone}">📞 ${r.customerPhone}</a></td>
+        <td><strong>${r.deviceModel}</strong><br><small style="color:var(--text-muted);">IMEI: ${r.imei || '---'}</small></td>
+        <td>${r.issue}<br><small style="color:var(--primary);">MK: ${r.password || 'Không có'}</small></td>
+        <td>Dự kiến: <strong>${r.estimatePrice.toLocaleString('vi-VN')}đ</strong><br>Cọc: <span style="color:var(--success);">${r.deposit.toLocaleString('vi-VN')}đ</span></td>
+        <td><span class="badge" style="background:${statusBadgeColor}15; color:${statusBadgeColor}; font-weight:800; border:1px solid ${statusBadgeColor}40;">${r.status}</span></td>
+        <td>
+          <div class="action-btns">
+            <button class="btn-print" onclick="openRepairInvoice('${r.id}')">🖨️ In Phiếu</button>
+            <button class="btn-submit" style="background:#059669; padding:5px 9px; font-size:0.75rem;" onclick="convertRepairToOrder('${r.id}')">💵 Tạo Đơn Thu Tiền</button>
+            <button class="btn-edit" onclick="advanceRepairStatus('${r.id}')">➡️ Trạng thái</button>
+            <button class="btn-del" onclick="deleteRepairTicket('${r.id}')">✕</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      const card = document.createElement('div');
+      card.className = 'mobile-data-card';
+      card.innerHTML = `
+        <div class="mob-card-head">
+          <div>
+            <div class="mob-card-title">#${r.id} - ${r.deviceModel}</div>
+            <div class="mob-card-sub">${formatDateVN(r.date)} • ${r.customerName} (<a href="tel:${cleanPhone}">📞 ${r.customerPhone}</a>)</div>
+          </div>
+          <span class="badge" style="background:${statusBadgeColor}15; color:${statusBadgeColor}; font-weight:800;">${r.status}</span>
+        </div>
+        <div class="mob-card-rows">
+          <div class="mob-card-row"><span class="mob-card-label">Lỗi báo:</span><span class="mob-card-val">${r.issue}</span></div>
+          <div class="mob-card-row"><span class="mob-card-label">Mật khẩu:</span><span class="mob-card-val" style="color:var(--primary);">${r.password || 'Không có'}</span></div>
+          <div class="mob-card-row"><span class="mob-card-label">Dự kiến / Cọc:</span><span class="mob-card-val"><strong>${r.estimatePrice.toLocaleString('vi-VN')}đ</strong> (Cọc: ${r.deposit.toLocaleString('vi-VN')}đ)</span></div>
+        </div>
+        <div class="mob-card-actions">
+          <button class="btn-print" onclick="openRepairInvoice('${r.id}')">🖨️ In Phiếu</button>
+          <button class="btn-edit" onclick="advanceRepairStatus('${r.id}')">➡️ Đổi Trạng Thái</button>
+          <button class="btn-del" onclick="deleteRepairTicket('${r.id}')">Xóa</button>
+        </div>
+      `;
+      mobileContainer.appendChild(card);
+    });
+  }
+
+  function advanceRepairStatus(id) {
+    const r = repairTickets.find(x => x.id === id);
+    if (!r) return;
+    const statuses = [
+      "1_Mới tiếp nhận",
+      "2_Đang báo giá",
+      "3_Đang sửa chữa",
+      "4_Đã hoàn thành",
+      "5_Đã giao khách"
+    ];
+    let currentIdx = statuses.indexOf(r.status);
+    if (currentIdx === -1) currentIdx = 0;
+    let nextIdx = (currentIdx + 1) % statuses.length;
+    r.status = statuses[nextIdx];
+    syncRepairToCloud();
+  }
+
+  function deleteRepairTicket(id) {
+    if (currentUser.role !== 'admin') return alert('Chỉ Quản lý mới có quyền xóa phiếu sửa chữa!');
+    if (confirm(`Xóa phiếu sửa chữa #${id}?`)) {
+      repairTickets = repairTickets.filter(r => r.id !== id);
+      syncRepairToCloud();
+    }
+  }
+
+  function openRepairInvoice(id) {
+    const r = repairTickets.find(x => x.id === id);
+    if (!r) return;
+    
+    // 1. Gán thông tin khách hàng & nhân viên lên mọi định dạng phiếu in (K80, A5, A4)
+    document.getElementById('billCustName').textContent = r.customerName || 'Khách lẻ';
+    document.getElementById('billCustPhone').textContent = r.customerPhone || '---';
+    document.getElementById('billStaff').textContent = r.staff || 'Tường Vy';
+    document.getElementById('billId').textContent = '#' + r.id;
+    document.getElementById('billDate').textContent = `${formatDateVN(r.date)} ${r.createdAtTime || ''}`;
+
+    // 2. Gán ghi chú chi tiết kỹ thuật máy (Model, IMEI, Mật khẩu, Lỗi...)
+    const noteRow = document.getElementById('billNoteRow');
+    document.getElementById('billNote').textContent = `Model: ${r.deviceModel} | IMEI: ${r.imei || 'N/A'} | MK: ${r.password || 'N/A'} | Tình trạng: ${r.condition || 'N/A'} | Lỗi: ${r.issue} | Hẹn trả: ${r.promiseTime || 'Liên hệ'}`;
+    noteRow.style.display = 'flex';
+
+    document.getElementById('billMainTitle').textContent = "PHIẾU BIÊN NHẬN SỬA CHỮA THIẾT BỊ";
+
+    // 3. Đổ dữ liệu bảng và tổng kết linh hoạt theo từng khổ in (K80 vs A5/A4)
+    const thead = document.getElementById('billTableHead');
+    const tbody = document.getElementById('billItemsTableBody');
+    const summaryBlock = document.getElementById('billSummaryBlock');
+    const fmt = activePrintFormat || 'k80';
+
+    const remainPay = Math.max(0, r.estimatePrice - r.deposit);
+
+    if (fmt === 'k80') {
+      thead.innerHTML = `
+        <tr>
+          <th style="text-align: left; width: 50%;">Nội dung dịch vụ / Linh kiện</th>
+          <th style="text-align: center; width: 20%;">SL</th>
+          <th style="text-align: right; width: 30%;">Đơn giá</th>
+        </tr>
+      `;
+
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="3" class="k80-item-name" style="padding-bottom:2px !important;">
+            <strong>Sửa chữa: ${r.deviceModel}</strong><br>
+            <span style="font-size:9.5px; color:#444;">[Yêu cầu: ${r.issue}]</span>
+          </td>
+        </tr>
+        <tr class="k80-row-values">
+          <td style="text-align: left; font-size:10px;">Phí dịch vụ dự kiến</td>
+          <td style="text-align: center; font-size:10px;">1</td>
+          <td style="text-align: right; font-weight: bold;">${(r.estimatePrice || 0).toLocaleString('vi-VN')} đ</td>
+        </tr>
+      `;
+
+      summaryBlock.innerHTML = `
+        <div class="bill-summary-row total-bold" style="border-top:1px dashed #000; padding-top:4px; margin-top:4px;">
+          <span>TỔNG CHI PHÍ DỰ KIẾN:</span>
+          <span style="color: var(--danger);">${(r.estimatePrice || 0).toLocaleString('vi-VN')} đ</span>
+        </div>
+        <div class="bill-summary-row" style="color:#047857; font-weight:bold; margin-top:2px;">
+          <span>Tiền cọc trước:</span>
+          <span>${(r.deposit || 0).toLocaleString('vi-VN')} đ</span>
+        </div>
+        <div class="bill-summary-row total-bold" style="color:var(--danger); border-top:1px dashed #000; padding-top:2px;">
+          <span>CÒN LẠI THANH TOÁN:</span>
+          <span>${remainPay.toLocaleString('vi-VN')} đ</span>
+        </div>
+      `;
+    } else {
+      // Bố cục chuẩn cho Khổ A5 và A4 khi in phiếu sửa chữa
+      thead.innerHTML = `
+        <tr>
+          <th style="width: 6%;">STT</th>
+          <th style="text-align: left;">Nội dung sửa chữa / Linh kiện thay thế</th>
+          <th style="width: 14%;">Nhóm DV</th>
+          <th style="width: 12%;">Bảo hành</th>
+          <th style="width: 8%;">SL</th>
+          <th style="text-align: right; width: 18%;">Đơn giá</th>
+          <th style="text-align: right; width: 20%;">Thành tiền</th>
+        </tr>
+      `;
+
+      tbody.innerHTML = `
+        <tr>
+          <td style="text-align: center;">1</td>
+          <td style="text-align: left; font-weight: bold;">Sửa chữa: ${r.deviceModel} (${r.issue})</td>
+          <td style="text-align: center; color: #555;">Dịch vụ</td>
+          <td style="text-align: center;">3 tháng</td>
+          <td style="text-align: center; font-weight: bold;">1</td>
+          <td style="text-align: right;">${(r.estimatePrice || 0).toLocaleString('vi-VN')} đ</td>
+          <td style="text-align: right; font-weight: bold;">${(r.estimatePrice || 0).toLocaleString('vi-VN')} đ</td>
+        </tr>
+      `;
+
+      summaryBlock.innerHTML = `
+        <div class="bill-summary-row">
+          <span>Tổng chi phí dự kiến:</span>
+          <strong>${(r.estimatePrice || 0).toLocaleString('vi-VN')} đ</strong>
+        </div>
+        <div class="bill-summary-row">
+          <span>Tiền cọc trước:</span>
+          <span style="color: #047857; font-weight: bold;">${(r.deposit || 0).toLocaleString('vi-VN')} đ</span>
+        </div>
+        <div class="bill-summary-row total-bold" style="border-top: 2px solid #000; border-bottom: 2px double #000; padding: 6px 0; margin-top: 4px;">
+          <span>CÒN LẠI THANH TOÁN KHI NHẬN MÁY:</span>
+          <span style="color: var(--danger);">${remainPay.toLocaleString('vi-VN')} đ</span>
+        </div>
+      `;
+    }
+
+    document.getElementById('billQRWrap').style.display = 'none';
+    const signaturesEl = document.querySelector('.bill-signatures');
+    if (signaturesEl) signaturesEl.style.display = 'flex';
+
+    switchPrintFormat(deviceConfig.defaultPrintFormat || 'k80');
+    document.getElementById('invoiceModal').classList.add('active');
+  }
   applyStoreSettings();
   applyBankSettings();
   initAuth();
