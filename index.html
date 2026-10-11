@@ -52,42 +52,6 @@
       --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
       --shadow: 0 4px 6px -1px rgba(0,0,0,0.07);
     }
-    @media (max-width: 768px) {
-  .sidebar {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    bottom: 0 !important;
-    width: 240px !important;
-    background: var(--card-bg) !important;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 1050 !important;
-    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-  }
-  .app-shell.mobile-menu-open .sidebar {
-    transform: translateX(0) !important;
-  }
-  .main-wrapper {
-    margin-left: 0 !important;
-  }
-}
-.menu-overlay-backdrop {
-      display: none !important;
-      position: fixed !important;
-      top: 0 !important; 
-      left: 0 !important; 
-      width: 100vw !important; 
-      height: 100vh !important;
-      background: rgba(15, 23, 42, 0.5) !important;
-      z-index: 1040 !important;
-      backdrop-filter: blur(2px);
-    }
-    .app-shell.mobile-menu-open .menu-overlay-backdrop {
-      display: block !important;
-    }
-
-    * { box-sizing: border-box; margin: 0; ... }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     html, body { max-width: 100vw; overflow-x: hidden; background-color: var(--bg); color: var(--text); }
     
@@ -434,7 +398,10 @@
     </div>
   </div>
 </div>
-  <div class="menu-overlay-backdrop" onclick="toggleMobileMenu()"></div>
+
+<!-- 2. BỐ CỤC ĐA TRANG (APP SHELL) -->
+<div id="appSection" class="app-shell no-print" style="display:none;">
+  
   <aside class="sidebar">
     <div class="sidebar-brand">
       <div class="sidebar-brand-icon">📱</div>
@@ -451,8 +418,7 @@
       <li><a class="nav-item" data-page="inventory" onclick="navigateTo('inventory')"><span class="nav-item-icon">📦</span> <span>Kho Hàng</span></a></li>
       <li><a class="nav-item" data-page="stockin" onclick="navigateTo('stockin')"><span class="nav-item-icon">📥</span> <span>Nhập Hàng</span></a></li>
       <li><a class="nav-item" data-page="customers" onclick="navigateTo('customers')"><span class="nav-item-icon">👥</span> <span>Khách Hàng</span></a></li>
-      <!-- 👉 Đã bổ sung thêm thẻ đóng </li> ở cuối dòng này -->
-      <li><a class="nav-item" data-page="repair" onclick="navigateTo('repair')"><span class="nav-item-icon">🔧</span> <span>Sửa Chữa</span></a></li>
+<li><a class="nav-item" data-page="repair" onclick="navigateTo('repair')"><span class="nav-item-icon">🔧</span> <span>Sửa Chữa</span></a></li>
       <li><a class="nav-item" data-page="settings" onclick="navigateTo('settings')"><span class="nav-item-icon">⚙️</span> <span>Cài Đặt</span></a></li>
     </ul>
 
@@ -473,7 +439,6 @@
   <div class="main-wrapper">
     <header class="topbar">
       <div class="topbar-left">
-        <button type="button" class="btn-topbar-icon" onclick="toggleMobileMenu()" style="margin-right: 8px;">☰</button>
         <span class="topbar-page-title" id="currentViewTitle">🏠 Tổng Quan</span>
       </div>
       <div class="topbar-actions">
@@ -1591,48 +1556,6 @@
 </div>
 
 <script>
-function editRepairTicket(id) {
-    const r = repairTickets.find(x => x.id === id);
-    if (!r) return;
-
-    if (r.status === '5_Đã giao khách') {
-      if (!confirm('Phiếu này đã hoàn tất giao khách. Bạn có chắc chắn muốn sửa lại thông tin không?')) return;
-    }
-
-    const newName = prompt("Tên khách hàng:", r.customerName || "");
-    if (newName !== null) r.customerName = newName.trim();
-
-    const newPhone = prompt("Số điện thoại khách:", r.customerPhone || "");
-    if (newPhone !== null) r.customerPhone = newPhone.trim();
-
-    const newModel = prompt("Model thiết bị (VD: iPhone 14 Pro Max):", r.deviceModel || "");
-    if (newModel !== null) r.deviceModel = newModel.trim();
-
-    const newImei = prompt("Số IMEI / Serial:", r.imei || "");
-    if (newImei !== null) r.imei = newImei.trim();
-
-    const newPass = prompt("Mật khẩu mở máy:", r.password || "");
-    if (newPass !== null) r.password = newPass.trim();
-
-    const newIssue = prompt("Lỗi khách báo & Yêu cầu sửa chữa:", r.issue || "");
-    if (newIssue !== null) r.issue = newIssue.trim();
-
-    const newPriceStr = prompt("Chi phí sửa chữa dự kiến (VNĐ):", r.estimatePrice || 0);
-    if (newPriceStr !== null) {
-      r.estimatePrice = parseFloat(newPriceStr.replace(/\D/g, '')) || 0;
-    }
-
-    const newDepositStr = prompt("Tiền cọc trước (VNĐ):", r.deposit || 0);
-    if (newDepositStr !== null) {
-      r.deposit = parseFloat(newDepositStr.replace(/\D/g, '')) || 0;
-    }
-
-    const newPromise = prompt("Thời gian hẹn trả máy:", r.promiseTime || "");
-    if (newPromise !== null) r.promiseTime = newPromise.trim();
-
-    syncRepairToCloud();
-    alert(`✅ Đã cập nhật thông tin phiếu sửa chữa #${r.id} thành công!`);
-  }
 function convertRepairToOrder(id) {
     const r = repairTickets.find(x => x.id === id);
     if (!r) return;
@@ -3538,23 +3461,13 @@ function applyStoreSettings() {
   }
 
   function applyUserPermissions() {
-    if (!currentUser) return;
-    
-    // Gán tên vào sidebar
-    document.getElementById('sideUserName').textContent = currentUser.name || "Tường Vy";
+    document.getElementById('sideUserName').textContent = currentUser.name;
     document.getElementById('sideUserRole').textContent = (currentUser.role === 'admin') ? 'Quản lý (Chủ tiệm)' : 'Nhân viên';
+    document.getElementById('dashWelcomeName').textContent = currentUser.name;
+    document.getElementById('dashWelcomeDate').textContent = `Hôm nay là ngày ${formatDateVN(getTodayVN())}`;
     
-    // 👉 Sửa dòng này để cập nhật trực tiếp tên vào banner Trang Chủ
-    const welcomeEl = document.getElementById('dashWelcomeName');
-    if (welcomeEl) {
-      welcomeEl.textContent = currentUser.name || "Tường Vy";
-    }
-
-    document.getElementById('dashWelcomeDate').textContent = "Hôm nay là ngày " + formatDateVN(getTodayVN());
-    document.getElementById('inputOrderStaffDisplay').value = currentUser.name || "Tường Vy";
-    document.getElementById('inputStockStaffDisplay').value = currentUser.name || "Tường Vy";
-    
-    // (Các phần cấu hình quyền hạn bên dưới giữ nguyên...)
+    document.getElementById('inputOrderStaffDisplay').value = currentUser.name;
+    document.getElementById('inputStockStaffDisplay').value = currentUser.name;
 
     const costField = document.getElementById('groupCostField');
     const stockCostField = document.getElementById('groupStockCostField');
@@ -4167,51 +4080,47 @@ function applyStoreSettings() {
   }
 
   function handleStockSubmit(e) {
-  e.preventDefault();
-  const barcode = document.getElementById('stockBarcode').value.trim();
-  const name = document.getElementById('stockName').value.trim();
-  const service = document.getElementById('stockService').value.trim();
-  const qty = parseInt(document.getElementById('stockQty').value) || 0;
-  
-  const rawPrice = document.getElementById('stockPrice').value;
-  const price = parseFloat(rawPrice.replace(/\D/g, '')) || 0;
+    e.preventDefault();
+    const barcode = document.getElementById('stockBarcode').value.trim();
+    const name = document.getElementById('stockName').value.trim();
+    const service = document.getElementById('stockService').value.trim();
+    const qty = parseInt(document.getElementById('stockQty').value) || 0;
+    const price = parseFloat(document.getElementById('stockPrice').value) || 0;
+    const warranty = document.getElementById('stockWarranty').value;
+    const note = document.getElementById('stockNote').value.trim();
+    const staff = currentUser ? currentUser.name : "Tường Vy";
 
-  const warranty = document.getElementById('stockWarranty').value;
-  const note = document.getElementById('stockNote').value.trim();
-  const staff = currentUser ? currentUser.name : "Tường Vy";
+    let cost = 0;
+    if (currentUser.role === 'admin') {
+      cost = parseFloat(document.getElementById('stockCost').value) || 0;
+    } else {
+      const existingItem = findInventoryItem(barcode) || findInventoryItem(name);
+      cost = existingItem ? existingItem.cost : 0;
+    }
 
-  let cost = 0;
-  if (currentUser.role === 'admin') {
-    const rawCost = document.getElementById('stockCost').value;
-    cost = parseFloat(rawCost.replace(/\D/g, '')) || 0;
-  } else {
-    const existingItem = findInventoryItem(barcode) || findInventoryItem(name);
-    cost = existingItem ? existingItem.cost : 0;
+    const existing = findInventoryItem(barcode) || findInventoryItem(name);
+    if (existing) {
+      existing.stock += qty;
+      if (barcode) existing.barcode = barcode;
+      if (currentUser.role === 'admin' && cost > 0) existing.cost = cost;
+      existing.price = price;
+      existing.service = service;
+      existing.warranty = warranty;
+      existing.staff = staff;
+      if (note) existing.note = note;
+      alert(`Đã cộng thêm ${qty} cái vào "${existing.name}". Tồn kho hiện tại: ${existing.stock}`);
+    } else {
+      inventory.push({
+        id: 'KHO' + (inventory.length + 1),
+        barcode, name, service, stock: qty, cost, price, warranty, staff, note
+      });
+      alert(`Đã thêm mặt hàng "${name}" vào kho!`);
+    }
+    syncInventoryToCloud();
+    document.getElementById('stockForm').reset();
+    document.getElementById('inputStockStaffDisplay').value = currentUser.name;
+    navigateTo('inventory');
   }
-
-  const existing = findInventoryItem(barcode) || findInventoryItem(name);
-  if (existing) {
-    existing.stock += qty;
-    if (barcode) existing.barcode = barcode;
-    if (currentUser.role === 'admin' && cost > 0) existing.cost = cost;
-    existing.price = price;
-    existing.service = service;
-    existing.warranty = warranty;
-    existing.staff = staff;
-    if (note) existing.note = note;
-    alert(`Đã cộng thêm ${qty} cái vào "${existing.name}". Tồn kho hiện tại: ${existing.stock}`);
-  } else {
-    inventory.push({
-      id: 'KHO' + (inventory.length + 1),
-      barcode, name, service, stock: qty, cost, price, warranty, staff, note
-    });
-    alert(`Đã thêm mặt hàng "${name}" vào kho!`);
-  }
-  syncInventoryToCloud();
-  document.getElementById('stockForm').reset();
-  document.getElementById('inputStockStaffDisplay').value = currentUser.name;
-  navigateTo('inventory');
-}
 
   function downloadExcelTemplate() {
     const data = [
@@ -5411,16 +5320,14 @@ let repairTickets = JSON.parse(localStorage.getItem('tuongvy_repair_tickets')) |
       tr.innerHTML = `
         <td><strong>#${r.id}</strong><br><small>${formatDateVN(r.date)}</small></td>
         <td><strong>${r.customerName}</strong><br><a href="tel:${cleanPhone}">📞 ${r.customerPhone}</a></td>
-        <td><strong>${r.deviceModel}</strong><br><small>IMEI: ${r.imei || '---'}</small></td>
-        <td>${r.issue}<br><small>MK: ${r.password || 'Không'}</small></td>
-        <td>Dự kiến: <strong>${r.estimatePrice.toLocaleString('vi-VN')}đ</strong><br>Cọc: ${r.deposit.toLocaleString('vi-VN')}đ</td>
-        <td><span class="badge" style="background:#eff6ff; color:var(--primary);">${r.status}</span></td>
+        <td><strong>${r.deviceModel}</strong><br><small style="color:var(--text-muted);">IMEI: ${r.imei || '---'}</small></td>
+        <td>${r.issue}<br><small style="color:var(--primary);">MK: ${r.password || 'Không có'}</small></td>
+        <td>Dự kiến: <strong>${r.estimatePrice.toLocaleString('vi-VN')}đ</strong><br>Cọc: <span style="color:var(--success);">${r.deposit.toLocaleString('vi-VN')}đ</span></td>
+        <td><span class="badge" style="background:${statusBadgeColor}15; color:${statusBadgeColor}; font-weight:800; border:1px solid ${statusBadgeColor}40;">${r.status}</span></td>
         <td>
           <div class="action-btns">
-            <button class="btn-print" onclick="openRepairInvoice('${r.id}')">🖨️ In</button>
-            <button class="btn-submit" style="background:#059669; padding:5px 9px; font-size:0.75rem;" onclick="convertRepairToOrder('${r.id}')">💵 Thu Tiền</button>
-            <!-- 👉 Thêm nút Sửa vào đây -->
-            <button class="btn-edit" onclick="editRepairTicket('${r.id}')">✏️ Sửa</button>
+            <button class="btn-print" onclick="openRepairInvoice('${r.id}')">🖨️ In Phiếu</button>
+            <button class="btn-submit" style="background:#059669; padding:5px 9px; font-size:0.75rem;" onclick="convertRepairToOrder('${r.id}')">💵 Tạo Đơn Thu Tiền</button>
             <button class="btn-edit" onclick="advanceRepairStatus('${r.id}')">➡️ Trạng thái</button>
             <button class="btn-del" onclick="deleteRepairTicket('${r.id}')">✕</button>
           </div>
@@ -5590,21 +5497,6 @@ let repairTickets = JSON.parse(localStorage.getItem('tuongvy_repair_tickets')) |
     switchPrintFormat(deviceConfig.defaultPrintFormat || 'k80');
     document.getElementById('invoiceModal').classList.add('active');
   }
-  function toggleMobileMenu() {
-    const appShell = document.getElementById('appSection');
-    if (appShell) {
-      appShell.classList.toggle('mobile-menu-open');
-    }
-  }
-
-  const originalNavigateTo = navigateTo;
-  navigateTo = function(pageId) {
-    originalNavigateTo(pageId);
-    const appShell = document.getElementById('appSection');
-    if (appShell) {
-      appShell.classList.remove('mobile-menu-open');
-    }
-  };
   applyStoreSettings();
   applyBankSettings();
   initAuth();
