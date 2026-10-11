@@ -3538,13 +3538,23 @@ function applyStoreSettings() {
   }
 
   function applyUserPermissions() {
-    document.getElementById('sideUserName').textContent = currentUser.name;
-    document.getElementById('sideUserRole').textContent = (currentUser.role === 'admin') ? 'Quản lý (Chủ tiệm)' : 'Nhân viên';
-    document.getElementById('dashWelcomeName').textContent = currentUser.name;
-    document.getElementById('dashWelcomeDate').textContent = `Hôm nay là ngày ${formatDateVN(getTodayVN())}`;
+    if (!currentUser) return;
     
-    document.getElementById('inputOrderStaffDisplay').value = currentUser.name;
-    document.getElementById('inputStockStaffDisplay').value = currentUser.name;
+    // Gán tên vào sidebar
+    document.getElementById('sideUserName').textContent = currentUser.name || "Tường Vy";
+    document.getElementById('sideUserRole').textContent = (currentUser.role === 'admin') ? 'Quản lý (Chủ tiệm)' : 'Nhân viên';
+    
+    // 👉 Sửa dòng này để cập nhật trực tiếp tên vào banner Trang Chủ
+    const welcomeEl = document.getElementById('dashWelcomeName');
+    if (welcomeEl) {
+      welcomeEl.textContent = currentUser.name || "Tường Vy";
+    }
+
+    document.getElementById('dashWelcomeDate').textContent = "Hôm nay là ngày " + formatDateVN(getTodayVN());
+    document.getElementById('inputOrderStaffDisplay').value = currentUser.name || "Tường Vy";
+    document.getElementById('inputStockStaffDisplay').value = currentUser.name || "Tường Vy";
+    
+    // (Các phần cấu hình quyền hạn bên dưới giữ nguyên...)
 
     const costField = document.getElementById('groupCostField');
     const stockCostField = document.getElementById('groupStockCostField');
