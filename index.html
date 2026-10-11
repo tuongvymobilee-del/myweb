@@ -1556,6 +1556,48 @@
 </div>
 
 <script>
+function editRepairTicket(id) {
+    const r = repairTickets.find(x => x.id === id);
+    if (!r) return;
+
+    if (r.status === '5_Đã giao khách') {
+      if (!confirm('Phiếu này đã hoàn tất giao khách. Bạn có chắc chắn muốn sửa lại thông tin không?')) return;
+    }
+
+    const newName = prompt("Tên khách hàng:", r.customerName || "");
+    if (newName !== null) r.customerName = newName.trim();
+
+    const newPhone = prompt("Số điện thoại khách:", r.customerPhone || "");
+    if (newPhone !== null) r.customerPhone = newPhone.trim();
+
+    const newModel = prompt("Model thiết bị (VD: iPhone 14 Pro Max):", r.deviceModel || "");
+    if (newModel !== null) r.deviceModel = newModel.trim();
+
+    const newImei = prompt("Số IMEI / Serial:", r.imei || "");
+    if (newImei !== null) r.imei = newImei.trim();
+
+    const newPass = prompt("Mật khẩu mở máy:", r.password || "");
+    if (newPass !== null) r.password = newPass.trim();
+
+    const newIssue = prompt("Lỗi khách báo & Yêu cầu sửa chữa:", r.issue || "");
+    if (newIssue !== null) r.issue = newIssue.trim();
+
+    const newPriceStr = prompt("Chi phí sửa chữa dự kiến (VNĐ):", r.estimatePrice || 0);
+    if (newPriceStr !== null) {
+      r.estimatePrice = parseFloat(newPriceStr.replace(/\D/g, '')) || 0;
+    }
+
+    const newDepositStr = prompt("Tiền cọc trước (VNĐ):", r.deposit || 0);
+    if (newDepositStr !== null) {
+      r.deposit = parseFloat(newDepositStr.replace(/\D/g, '')) || 0;
+    }
+
+    const newPromise = prompt("Thời gian hẹn trả máy:", r.promiseTime || "");
+    if (newPromise !== null) r.promiseTime = newPromise.trim();
+
+    syncRepairToCloud();
+    alert(`✅ Đã cập nhật thông tin phiếu sửa chữa #${r.id} thành công!`);
+  }
 function convertRepairToOrder(id) {
     const r = repairTickets.find(x => x.id === id);
     if (!r) return;
@@ -4080,47 +4122,51 @@ function applyStoreSettings() {
   }
 
   function handleStockSubmit(e) {
-    e.preventDefault();
-    const barcode = document.getElementById('stockBarcode').value.trim();
-    const name = document.getElementById('stockName').value.trim();
-    const service = document.getElementById('stockService').value.trim();
-    const qty = parseInt(document.getElementById('stockQty').value) || 0;
-    const price = parseFloat(document.getElementById('stockPrice').value) || 0;
-    const warranty = document.getElementById('stockWarranty').value;
-    const note = document.getElementById('stockNote').value.trim();
-    const staff = currentUser ? currentUser.name : "Tường Vy";
+  e.preventDefault();
+  const barcode = document.getElementById('stockBarcode').value.trim();
+  const name = document.getElementById('stockName').value.trim();
+  const service = document.getElementById('stockService').value.trim();
+  const qty = parseInt(document.getElementById('stockQty').value) || 0;
+  
+  const rawPrice = document.getElementById('stockPrice').value;
+  const price = parseFloat(rawPrice.replace(/\D/g, '')) || 0;
 
-    let cost = 0;
-    if (currentUser.role === 'admin') {
-      cost = parseFloat(document.getElementById('stockCost').value) || 0;
-    } else {
-      const existingItem = findInventoryItem(barcode) || findInventoryItem(name);
-      cost = existingItem ? existingItem.cost : 0;
-    }
+  const warranty = document.getElementById('stockWarranty').value;
+  const note = document.getElementById('stockNote').value.trim();
+  const staff = currentUser ? currentUser.name : "Tường Vy";
 
-    const existing = findInventoryItem(barcode) || findInventoryItem(name);
-    if (existing) {
-      existing.stock += qty;
-      if (barcode) existing.barcode = barcode;
-      if (currentUser.role === 'admin' && cost > 0) existing.cost = cost;
-      existing.price = price;
-      existing.service = service;
-      existing.warranty = warranty;
-      existing.staff = staff;
-      if (note) existing.note = note;
-      alert(`Đã cộng thêm ${qty} cái vào "${existing.name}". Tồn kho hiện tại: ${existing.stock}`);
-    } else {
-      inventory.push({
-        id: 'KHO' + (inventory.length + 1),
-        barcode, name, service, stock: qty, cost, price, warranty, staff, note
-      });
-      alert(`Đã thêm mặt hàng "${name}" vào kho!`);
-    }
-    syncInventoryToCloud();
-    document.getElementById('stockForm').reset();
-    document.getElementById('inputStockStaffDisplay').value = currentUser.name;
-    navigateTo('inventory');
+  let cost = 0;
+  if (currentUser.role === 'admin') {
+    const rawCost = document.getElementById('stockCost').value;
+    cost = parseFloat(rawCost.replace(/\D/g, '')) || 0;
+  } else {
+    const existingItem = findInventoryItem(barcode) || findInventoryItem(name);
+    cost = existingItem ? existingItem.cost : 0;
   }
+
+  const existing = findInventoryItem(barcode) || findInventoryItem(name);
+  if (existing) {
+    existing.stock += qty;
+    if (barcode) existing.barcode = barcode;
+    if (currentUser.role === 'admin' && cost > 0) existing.cost = cost;
+    existing.price = price;
+    existing.service = service;
+    existing.warranty = warranty;
+    existing.staff = staff;
+    if (note) existing.note = note;
+    alert(`Đã cộng thêm ${qty} cái vào "${existing.name}". Tồn kho hiện tại: ${existing.stock}`);
+  } else {
+    inventory.push({
+      id: 'KHO' + (inventory.length + 1),
+      barcode, name, service, stock: qty, cost, price, warranty, staff, note
+    });
+    alert(`Đã thêm mặt hàng "${name}" vào kho!`);
+  }
+  syncInventoryToCloud();
+  document.getElementById('stockForm').reset();
+  document.getElementById('inputStockStaffDisplay').value = currentUser.name;
+  navigateTo('inventory');
+}
 
   function downloadExcelTemplate() {
     const data = [
@@ -5320,14 +5366,16 @@ let repairTickets = JSON.parse(localStorage.getItem('tuongvy_repair_tickets')) |
       tr.innerHTML = `
         <td><strong>#${r.id}</strong><br><small>${formatDateVN(r.date)}</small></td>
         <td><strong>${r.customerName}</strong><br><a href="tel:${cleanPhone}">📞 ${r.customerPhone}</a></td>
-        <td><strong>${r.deviceModel}</strong><br><small style="color:var(--text-muted);">IMEI: ${r.imei || '---'}</small></td>
-        <td>${r.issue}<br><small style="color:var(--primary);">MK: ${r.password || 'Không có'}</small></td>
-        <td>Dự kiến: <strong>${r.estimatePrice.toLocaleString('vi-VN')}đ</strong><br>Cọc: <span style="color:var(--success);">${r.deposit.toLocaleString('vi-VN')}đ</span></td>
-        <td><span class="badge" style="background:${statusBadgeColor}15; color:${statusBadgeColor}; font-weight:800; border:1px solid ${statusBadgeColor}40;">${r.status}</span></td>
+        <td><strong>${r.deviceModel}</strong><br><small>IMEI: ${r.imei || '---'}</small></td>
+        <td>${r.issue}<br><small>MK: ${r.password || 'Không'}</small></td>
+        <td>Dự kiến: <strong>${r.estimatePrice.toLocaleString('vi-VN')}đ</strong><br>Cọc: ${r.deposit.toLocaleString('vi-VN')}đ</td>
+        <td><span class="badge" style="background:#eff6ff; color:var(--primary);">${r.status}</span></td>
         <td>
           <div class="action-btns">
-            <button class="btn-print" onclick="openRepairInvoice('${r.id}')">🖨️ In Phiếu</button>
-            <button class="btn-submit" style="background:#059669; padding:5px 9px; font-size:0.75rem;" onclick="convertRepairToOrder('${r.id}')">💵 Tạo Đơn Thu Tiền</button>
+            <button class="btn-print" onclick="openRepairInvoice('${r.id}')">🖨️ In</button>
+            <button class="btn-submit" style="background:#059669; padding:5px 9px; font-size:0.75rem;" onclick="convertRepairToOrder('${r.id}')">💵 Thu Tiền</button>
+            <!-- 👉 Thêm nút Sửa vào đây -->
+            <button class="btn-edit" onclick="editRepairTicket('${r.id}')">✏️ Sửa</button>
             <button class="btn-edit" onclick="advanceRepairStatus('${r.id}')">➡️ Trạng thái</button>
             <button class="btn-del" onclick="deleteRepairTicket('${r.id}')">✕</button>
           </div>
